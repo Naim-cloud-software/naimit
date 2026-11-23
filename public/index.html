@@ -1,0 +1,505 @@
+﻿<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Naimit: Cyber Battle</title>
+<meta name="description" content="Naimit - quiz, hack je tegenstanders en pak de eerste plek.">
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;600;700&family=JetBrains+Mono:wght@400;700&display=swap');
+:root{--g:#4ade80;--b:#3b82f6;--bg:#020617;--card:rgba(15,23,42,.8);--line:rgba(148,163,184,.18);--r:#f43f5e;--y:#fbbf24;--p:#a855f7}
+*{box-sizing:border-box}
+html,body{margin:0;min-height:100%}
+body{font-family:'Space Grotesk',sans-serif;background:var(--bg);color:#f8fafc;overflow-x:hidden;
+background-image:radial-gradient(circle at 50% 0%,rgba(59,130,246,.12),transparent 50%),radial-gradient(circle at 0 100%,rgba(74,222,128,.08),transparent 40%)}
+body:before{content:"";position:fixed;inset:0;pointer-events:none;background-image:linear-gradient(rgba(74,222,128,.045) 1px,transparent 1px),linear-gradient(90deg,rgba(74,222,128,.045) 1px,transparent 1px);background-size:48px 48px;mask-image:radial-gradient(ellipse at center,#000,transparent 80%)}
+#matrix{position:fixed;inset:0;z-index:0;opacity:.18;pointer-events:none}
+#root{position:relative;z-index:1;min-height:100vh}
+.mono{font-family:'JetBrains Mono',monospace}
+.wrap{max-width:1000px;margin:0 auto;padding:24px 18px}
+.center{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:20px;text-align:center}
+.glass{background:var(--card);backdrop-filter:blur(12px);border:1px solid var(--line);border-radius:20px;box-shadow:0 10px 40px rgba(0,0,0,.5)}
+.neon{border-color:var(--g);box-shadow:0 0 22px rgba(74,222,128,.25)}
+h1.logo{font-size:clamp(3rem,13vw,6rem);margin:0;font-weight:700;letter-spacing:-.02em;text-shadow:.04em 0 0 #00fffc,-.03em -.03em 0 #fc00ff;animation:gl 2.4s infinite}
+@keyframes gl{0%,90%,100%{text-shadow:.04em 0 0 #00fffc,-.03em -.03em 0 #fc00ff}92%{text-shadow:-.05em -.02em 0 #00fffc,.03em .03em 0 #fc00ff;transform:translateX(2px)}95%{text-shadow:.05em .03em 0 #00fffc,.03em 0 0 #fc00ff;transform:translateX(-2px)}}
+.sub{color:var(--g);letter-spacing:.3em;font-size:.78rem;margin:6px 0 30px}
+input,textarea{width:100%;background:rgba(2,6,23,.7);color:#fff;border:1px solid #334155;border-radius:12px;padding:14px 16px;font:inherit;font-size:1rem;outline:none}
+input:focus,textarea:focus{border-color:var(--g)}
+.pin-in{text-align:center;font-size:2rem;letter-spacing:.4em;font-family:'JetBrains Mono',monospace;font-weight:700}
+button{font:inherit;cursor:pointer;border:0;color:#fff}
+.btn{padding:15px 22px;border-radius:14px;font-weight:700;font-size:1rem;background:#1e293b;border:1px solid #334155;transition:.15s}
+.btn:hover{transform:translateY(-2px);border-color:var(--g)}
+.btn:active{transform:scale(.97)}
+.btn.go{background:linear-gradient(135deg,#22c55e,#16a34a);border-color:#4ade80;color:#04130a;box-shadow:0 0 24px rgba(74,222,128,.35)}
+.btn.red{background:#7f1d1d;border-color:#f43f5e}
+.btn.big{padding:20px 26px;font-size:1.3rem}
+.btn[disabled]{opacity:.4;pointer-events:none}
+.stack{display:grid;gap:12px;width:100%;max-width:380px}
+.row{display:flex;gap:12px;flex-wrap:wrap;align-items:center}
+.lbl{font-size:.68rem;letter-spacing:.2em;color:#94a3b8;text-transform:uppercase;margin:0 0 6px}
+.err{color:#fb7185;min-height:1.3em;font-size:.9rem;margin-top:6px}
+.pin-big{font-size:clamp(4rem,16vw,9rem);font-weight:700;letter-spacing:.06em;color:var(--g);text-shadow:0 0 30px rgba(74,222,128,.6);font-family:'JetBrains Mono',monospace;line-height:1}
+.chip{display:flex;align-items:center;gap:8px;padding:10px 14px;border-radius:12px;background:rgba(30,41,59,.7);border:1px solid var(--line);font-weight:600;animation:pop .35s}
+@keyframes pop{from{transform:scale(.6);opacity:0}to{transform:none;opacity:1}}
+.dot{width:9px;height:9px;border-radius:50%;background:var(--g);box-shadow:0 0 8px var(--g)}
+.grid{display:grid;gap:12px}
+.pgrid{grid-template-columns:repeat(auto-fill,minmax(150px,1fr))}
+.topbar{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:12px 16px;position:sticky;top:0;z-index:5;background:rgba(2,6,23,.85);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+.stat{font-family:'JetBrains Mono',monospace;font-weight:700}
+.stat small{display:block;color:#94a3b8;font-size:.6rem;letter-spacing:.2em;font-weight:400}
+.qcard{padding:28px 22px;text-align:center;font-size:clamp(1.3rem,4vw,2.1rem);font-weight:700;margin:18px 0}
+.opts{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media(max-width:600px){.opts{grid-template-columns:1fr}}
+.opt{padding:22px 16px;border-radius:16px;font-size:1.1rem;font-weight:700;text-align:left;display:flex;gap:12px;align-items:center;transition:.12s;border:2px solid transparent}
+.opt:hover{transform:translateY(-2px);filter:brightness(1.15)}
+.opt i{font-style:normal;font-family:'JetBrains Mono',monospace;background:rgba(0,0,0,.3);border-radius:8px;padding:4px 10px}
+.o0{background:#be123c}.o1{background:#1d4ed8}.o2{background:#b45309}.o3{background:#15803d}
+.opt.ok{border-color:#fff;box-shadow:0 0 30px #4ade80;background:#16a34a}
+.opt.bad{opacity:.35;background:#475569}
+.shake{animation:sh .35s}
+@keyframes sh{25%{transform:translateX(-8px)}75%{transform:translateX(8px)}}
+.bar{height:8px;border-radius:99px;background:#1e293b;overflow:hidden}
+.bar>div{height:100%;background:linear-gradient(90deg,var(--g),var(--b));transition:width .5s}
+.fx{display:flex;gap:8px;flex-wrap:wrap;min-height:30px}
+.tag{font-size:.75rem;font-family:'JetBrains Mono',monospace;padding:5px 10px;border-radius:99px;border:1px solid}
+.t-sh{color:#60a5fa;border-color:#60a5fa}.t-ml{color:var(--y);border-color:var(--y)}.t-st{color:#fb923c;border-color:#fb923c}
+.lb{display:grid;gap:8px}
+.lbrow{display:grid;grid-template-columns:34px 1fr auto;gap:12px;align-items:center;padding:10px 14px;border-radius:14px;background:rgba(30,41,59,.55);border:1px solid var(--line);transition:transform .4s}
+.lbrow.me{border-color:var(--g);background:rgba(74,222,128,.1)}
+.lbrow b.rk{font-family:'JetBrains Mono',monospace;color:var(--y)}
+.modal{position:fixed;inset:0;background:rgba(2,6,23,.88);z-index:50;display:flex;align-items:center;justify-content:center;padding:18px;animation:pop .25s}
+.modal .box{width:100%;max-width:640px;padding:24px;max-height:90vh;overflow:auto}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:12px;margin-top:14px}
+.hcard{padding:18px 14px;border-radius:16px;text-align:left;background:#0f172a;border:1px solid var(--line);transition:.15s}
+.hcard:hover{transform:translateY(-4px) rotate(-1deg);border-color:var(--c);box-shadow:0 0 24px color-mix(in srgb,var(--c) 40%,transparent)}
+.hcard .ic{font-size:2rem}.hcard b{display:block;margin:6px 0 4px;color:var(--c)}.hcard span{font-size:.82rem;color:#94a3b8}
+.frozen{position:fixed;inset:0;z-index:60;background:rgba(14,116,144,.55);backdrop-filter:blur(8px) saturate(.6);display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:2rem;font-weight:700;text-align:center;padding:20px}
+.toast{position:fixed;left:50%;top:70px;transform:translateX(-50%);z-index:70;padding:14px 20px;border-radius:14px;font-weight:700;animation:pop .3s;max-width:92vw;text-align:center}
+.toast.bad{background:#9f1239;border:1px solid #fb7185}.toast.good{background:#14532d;border:1px solid var(--g)}
+.feed{font-family:'JetBrains Mono',monospace;font-size:.82rem;display:grid;gap:6px}
+.feed div{padding:8px 12px;border-left:3px solid var(--g);background:rgba(15,23,42,.7);border-radius:6px;animation:pop .3s}
+.feed .h{border-color:var(--r)}
+.qrow{display:flex;justify-content:space-between;gap:10px;align-items:center;padding:12px 14px;border-radius:12px;background:rgba(30,41,59,.55);border:1px solid var(--line);margin-bottom:8px}
+.qrow .x{background:none;color:#64748b;font-size:1.2rem}.qrow .x:hover{color:var(--r)}
+.podium{display:flex;align-items:flex-end;justify-content:center;gap:12px;margin:30px 0;min-height:260px}
+.pod{width:min(30vw,170px);border-radius:16px 16px 0 0;padding:14px 8px;text-align:center;font-weight:700;animation:rise 1s both}
+.pod .n{font-size:1.1rem;word-break:break-word}.pod .s{font-family:'JetBrains Mono',monospace;color:var(--y);font-size:.9rem}
+.p1{height:240px;background:linear-gradient(#ca8a04,#713f12);animation-delay:.8s}.p2{height:180px;background:linear-gradient(#64748b,#334155);animation-delay:.4s}.p3{height:130px;background:linear-gradient(#b45309,#78350f);animation-delay:0s}
+@keyframes rise{from{transform:translateY(200px);opacity:0}to{transform:none;opacity:1}}
+.timer{font-size:2.2rem;font-weight:700;font-family:'JetBrains Mono',monospace;color:var(--g)}
+.timer.low{color:var(--r);animation:pu 1s infinite}@keyframes pu{50%{opacity:.4}}
+.spin{width:44px;height:44px;border:4px solid var(--g);border-top-color:transparent;border-radius:50%;animation:sp 1s linear infinite;margin:0 auto 14px}@keyframes sp{to{transform:rotate(360deg)}}
+a{color:var(--g)}
+.hint{color:#64748b;font-size:.8rem}
+</style>
+</head>
+<body>
+<canvas id="matrix"></canvas>
+<div id="root"></div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+import { getFirestore, collection, doc, setDoc, getDoc, updateDoc, onSnapshot, addDoc, runTransaction, query, orderBy, limit, increment }
+  from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+const app = initializeApp({
+  apiKey: "AIzaSyCQOaU4CLm60Hs25kDxnrKv-FkJT2nbRBA",
+  authDomain: "naimit-ncs.firebaseapp.com",
+  projectId: "naimit-ncs",
+  storageBucket: "naimit-ncs.firebasestorage.app",
+  messagingSenderId: "594303603345",
+  appId: "1:594303603345:web:0e9bbccd50b1701c7fa530"
+});
+const db = getFirestore(app);
+const gref = pin => doc(db, "games", pin);
+const pcol = pin => collection(db, "games", pin, "players");
+const pref = (pin, id) => doc(db, "games", pin, "players", id);
+const ecol = pin => collection(db, "games", pin, "events");
+
+/* ---------- helpers ---------- */
+const $ = s => document.querySelector(s);
+const root = $("#root");
+const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+const shuffle = a => { a = [...a]; for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };
+const fmt = n => Math.round(n).toLocaleString("nl-NL");
+const fmtT = ms => { ms = Math.max(0, ms); const s = Math.ceil(ms / 1000); return Math.floor(s / 60) + ":" + String(s % 60).padStart(2, "0"); };
+const pid = localStorage.pid || (localStorage.pid = "p" + Math.random().toString(36).slice(2, 10) + Date.now().toString(36));
+const COLORS = ["#f43f5e", "#3b82f6", "#f59e0b", "#22c55e", "#a855f7", "#06b6d4", "#ec4899", "#84cc16"];
+const LET = ["A", "B", "C", "D"];
+
+let ac; function beep(f = 600, d = .12, type = "sine", v = .06) {
+  try { ac = ac || new (window.AudioContext || window.webkitAudioContext)(); const o = ac.createOscillator(), g = ac.createGain();
+    o.type = type; o.frequency.value = f; g.gain.value = v; g.gain.exponentialRampToValueAtTime(.0001, ac.currentTime + d);
+    o.connect(g); g.connect(ac.destination); o.start(); o.stop(ac.currentTime + d); } catch {} }
+const sfx = { ok: () => { beep(660, .1); setTimeout(() => beep(990, .15), 90); }, bad: () => beep(140, .3, "sawtooth"), hack: () => { beep(300, .08, "square"); setTimeout(() => beep(500, .08, "square"), 80); setTimeout(() => beep(900, .15, "square"), 160); }, hit: () => { beep(110, .4, "sawtooth", .1); } };
+
+function toast(msg, kind = "good", ms = 2600) {
+  const t = document.createElement("div"); t.className = "toast " + kind; t.textContent = msg; document.body.appendChild(t);
+  setTimeout(() => t.remove(), ms);
+}
+
+/* matrix rain */
+(() => {
+  const c = $("#matrix"), x = c.getContext("2d"); let cols, drops;
+  const init = () => { c.width = innerWidth; c.height = innerHeight; cols = Math.floor(c.width / 16); drops = Array(cols).fill(0).map(() => Math.random() * -50); };
+  init(); addEventListener("resize", init);
+  setInterval(() => { x.fillStyle = "rgba(2,6,23,.12)"; x.fillRect(0, 0, c.width, c.height); x.fillStyle = "#4ade80"; x.font = "14px monospace";
+    drops.forEach((y, i) => { x.fillText(Math.random() < .5 ? "0" : "1", i * 16, y * 16); drops[i] = y * 16 > c.height && Math.random() > .97 ? 0 : y + 1; }); }, 70);
+})();
+
+/* ---------- presets ---------- */
+const PRESETS = {
+  "Cyber & ICT": [
+    { q: "Waar staat HTML voor?", a: "HyperText Markup Language", options: ["High Tech Modern Language", "HyperTool Multi Link", "Home Text Make-up Language"] },
+    { q: "Wat is phishing?", a: "Valse berichten om gegevens te stelen", options: ["Een soort virusscanner", "Een snelle wifi-verbinding", "Een back-up maken"] },
+    { q: "Welk getal is 1010 in binair, in decimaal?", a: "10", options: ["8", "12", "5"] },
+    { q: "Waar gebruik je een firewall voor?", a: "Ongewenst netwerkverkeer blokkeren", options: ["Je scherm helderder maken", "Bestanden comprimeren", "Je computer koelen"] },
+    { q: "Wat doet een sterk wachtwoord?", a: "Lang, uniek en met verschillende tekens", options: ["Je naam + 123", "Altijd hetzelfde overal", "Alleen kleine letters"] },
+    { q: "Wat is 2FA?", a: "Inloggen met een tweede bewijs", options: ["Twee wachtwoorden onthouden", "Twee accounts aanmaken", "Een snellere internetlijn"] },
+    { q: "Welke taal geeft een website zijn opmaak?", a: "CSS", options: ["SQL", "Python", "Bash"] },
+    { q: "Wat is een IP-adres?", a: "Het adres van een apparaat op een netwerk", options: ["Een soort wachtwoord", "De naam van je wifi", "Een type virus"] },
+    { q: "Hoeveel bits zitten er in een byte?", a: "8", options: ["4", "16", "10"] },
+    { q: "Wat betekent HTTPS?", a: "Beveiligde versie van HTTP", options: ["Heel Trage Pagina Server", "High Text Page Style", "Hyper Tool Protocol Speed"] }
+  ],
+  "Algemeen": [
+    { q: "Wat is de hoofdstad van Nederland?", a: "Amsterdam", options: ["Rotterdam", "Den Haag", "Utrecht"] },
+    { q: "Hoeveel is 12 x 12?", a: "144", options: ["124", "154", "132"] },
+    { q: "Welke planeet staat het dichtst bij de zon?", a: "Mercurius", options: ["Venus", "Mars", "Aarde"] },
+    { q: "Wat is H2O?", a: "Water", options: ["Zuurstof", "Waterstof", "Zout"] },
+    { q: "In welk jaar begon de Tweede Wereldoorlog?", a: "1939", options: ["1914", "1945", "1933"] },
+    { q: "Hoeveel continenten zijn er?", a: "7", options: ["5", "6", "8"] },
+    { q: "Wat is de grootste oceaan?", a: "Grote Oceaan", options: ["Atlantische Oceaan", "Indische Oceaan", "Noordelijke IJszee"] },
+    { q: "Wie schilderde De Nachtwacht?", a: "Rembrandt", options: ["Van Gogh", "Vermeer", "Mondriaan"] }
+  ]
+};
+
+/* ---------- hacks ---------- */
+const HACKS = {
+  steal:     { ic: "💸", n: "Data Steal",  d: "Pak 15% van de credits van een speler.", c: "#f59e0b", t: true },
+  virus:     { ic: "☣️", n: "Virus",       d: "Doelwit verliest 150 credits.",          c: "#f43f5e", t: true },
+  freeze:    { ic: "🧊", n: "Freeze",      d: "Doelwit zit 6 seconden vast.",           c: "#22d3ee", t: true },
+  overclock: { ic: "⚡", n: "Overclock",   d: "Dubbele credits voor 20 seconden.",      c: "#a855f7", t: false },
+  firewall:  { ic: "🛡️", n: "Firewall",    d: "Blokkeert de volgende hack op jou.",     c: "#60a5fa", t: false },
+  swap:      { ic: "🔀", n: "Swap",        d: "Wissel je credits met een speler (alleen als jij minder hebt).", c: "#ec4899", t: true },
+  blackout:  { ic: "🌑", n: "Blackout",    d: "Alle anderen zien 5 seconden niets.",    c: "#94a3b8", t: false },
+  jackpot:   { ic: "🎰", n: "Jackpot",     d: "Direct +250 credits.",                   c: "#4ade80", t: false }
+};
+const HKEYS = Object.keys(HACKS);
+
+/* ---------- state ---------- */
+let S = { role: null, pin: null, game: null, players: [], events: [], view: null, unsubs: [] };
+function cleanup() { S.unsubs.forEach(u => u()); S.unsubs = []; clearInterval(S.tick); }
+function go(view, html) { S.view = view; root.innerHTML = html; window.scrollTo(0, 0); }
+
+/* ---------- HOME ---------- */
+function Home() {
+  cleanup(); S = { role: null, pin: null, game: null, players: [], events: [], view: "home", unsubs: [] };
+  const qpin = new URLSearchParams(location.search).get("pin") || "";
+  go("home", `<div class="center">
+    <h1 class="logo">NAIMIT</h1><div class="sub mono">CYBER BATTLEGROUND</div>
+    <div class="stack glass neon" style="padding:22px">
+      <div><div class="lbl">Game PIN</div><input id="pin" class="pin-in" inputmode="numeric" maxlength="6" placeholder="000000" value="${esc(qpin)}"></div>
+      <div><div class="lbl">Hackernaam</div><input id="name" maxlength="14" placeholder="bv. Ghost" value="${esc(localStorage.pname || "")}"></div>
+      <button class="btn go big" id="join">JOIN SPEL</button>
+      <div class="err" id="err"></div>
+    </div>
+    <div class="stack" style="margin-top:14px"><button class="btn" id="host">HOST SPEL</button></div>
+    <div class="mono hint" style="margin-top:34px">V2.0 · QUIZ + HACKS · GEEN INLOG NODIG</div>
+  </div>`);
+  $("#host").onclick = HostSetup;
+  $("#join").onclick = async () => {
+    const pin = $("#pin").value.trim(), name = $("#name").value.trim();
+    const err = m => $("#err").textContent = m;
+    if (pin.length !== 6) return err("Vul een PIN van 6 cijfers in.");
+    if (!name) return err("Kies een hackernaam.");
+    $("#join").disabled = true; err("Verbinden...");
+    try {
+      const s = await getDoc(gref(pin));
+      if (!s.exists()) { $("#join").disabled = false; return err("Geen spel gevonden met deze PIN."); }
+      const g = s.data();
+      if (g.status === "ended") { $("#join").disabled = false; return err("Dit spel is al afgelopen."); }
+      localStorage.pname = name;
+      const me = { name, score: 0, streak: 0, correct: 0, wrong: 0, shield: false, frozenUntil: 0, multUntil: 0, color: COLORS[Math.floor(Math.random() * COLORS.length)], lastHit: null, joinedAt: Date.now() };
+      await setDoc(pref(pin, pid), me);
+      Player(pin);
+    } catch (e) { $("#join").disabled = false; err("Fout: " + e.message); }
+  };
+  $("#pin").addEventListener("keydown", e => e.key === "Enter" && $("#name").focus());
+  $("#name").addEventListener("keydown", e => e.key === "Enter" && $("#join").click());
+}
+
+/* ---------- HOST ---------- */
+let setup = { qs: structuredClone(PRESETS["Cyber & ICT"]), minutes: 5, hacks: true };
+function HostSetup() {
+  cleanup();
+  const draw = () => {
+    go("setup", `<div class="wrap">
+      <div class="row" style="justify-content:space-between;margin-bottom:22px">
+        <div><div class="lbl mono" style="color:var(--g)">SERVER.HOST</div><h2 style="margin:0;font-size:2.2rem">Maak je <span style="color:var(--g)">spel</span></h2></div>
+        <div class="row"><button class="btn" id="back">← Terug</button><button class="btn go" id="launch" ${setup.qs.length ? "" : "disabled"}>LAUNCH</button></div>
+      </div>
+      <div class="grid" style="grid-template-columns:repeat(auto-fit,minmax(300px,1fr))">
+        <div class="glass" style="padding:20px">
+          <div class="lbl">Instellingen</div>
+          <div class="row" style="margin-bottom:12px">${[3, 5, 8, 12].map(m => `<button class="btn ${setup.minutes === m ? "go" : ""}" data-m="${m}">${m} min</button>`).join("")}</div>
+          <label class="row" style="margin-bottom:18px"><input type="checkbox" id="hk" ${setup.hacks ? "checked" : ""} style="width:auto"> Hacks aan (steal, virus, freeze...)</label>
+          <div class="lbl">Voorbeeld-sets</div>
+          <div class="row" style="margin-bottom:18px">${Object.keys(PRESETS).map(k => `<button class="btn" data-p="${esc(k)}">${esc(k)}</button>`).join("")}</div>
+          <div class="lbl">Nieuwe vraag</div>
+          <div class="grid" style="gap:8px">
+            <input id="nq" placeholder="Vraag">
+            <input id="na" placeholder="Juiste antwoord" style="border-color:#16a34a">
+            <input id="n1" placeholder="Fout antwoord 1"><input id="n2" placeholder="Fout antwoord 2 (optioneel)"><input id="n3" placeholder="Fout antwoord 3 (optioneel)">
+            <button class="btn" id="add">+ Vraag opslaan</button>
+            <input type="file" id="file" accept=".json" hidden>
+            <button class="btn" id="imp">JSON importeren</button>
+            <div class="hint mono">Formaat: [{"q":"..","a":"..","options":["..",".."]}]</div>
+          </div>
+        </div>
+        <div class="glass" style="padding:20px;max-height:80vh;overflow:auto">
+          <div class="lbl">Vragen (${setup.qs.length})</div>
+          ${setup.qs.map((q, i) => `<div class="qrow"><div><div class="hint mono">#${i + 1}</div>${esc(q.q)}</div><button class="x" data-d="${i}">✕</button></div>`).join("") || '<div class="hint">Nog geen vragen.</div>'}
+        </div></div></div>`);
+    $("#back").onclick = Home;
+    document.querySelectorAll("[data-m]").forEach(b => b.onclick = () => { setup.minutes = +b.dataset.m; draw(); });
+    document.querySelectorAll("[data-p]").forEach(b => b.onclick = () => { setup.qs = structuredClone(PRESETS[b.dataset.p]); draw(); });
+    document.querySelectorAll("[data-d]").forEach(b => b.onclick = () => { setup.qs.splice(+b.dataset.d, 1); draw(); });
+    $("#hk").onchange = e => setup.hacks = e.target.checked;
+    $("#add").onclick = () => {
+      const q = $("#nq").value.trim(), a = $("#na").value.trim(), w = ["#n1", "#n2", "#n3"].map(s => $(s).value.trim()).filter(Boolean);
+      if (!q || !a || !w.length) return toast("Vul vraag, antwoord en minstens 1 fout antwoord in.", "bad");
+      setup.qs.push({ q, a, options: w }); draw();
+    };
+    $("#imp").onclick = () => $("#file").click();
+    $("#file").onchange = e => {
+      const f = e.target.files[0]; if (!f) return; const r = new FileReader();
+      r.onload = ev => { try { const j = JSON.parse(ev.target.result); const ok = (Array.isArray(j) ? j : []).filter(i => i.q && i.a && Array.isArray(i.options) && i.options.length);
+        if (!ok.length) throw new Error("Geen geldige vragen gevonden."); setup.qs.push(...ok); draw(); toast(ok.length + " vragen geimporteerd"); } catch (err) { toast(err.message, "bad"); } };
+      r.readAsText(f);
+    };
+    $("#launch").onclick = async () => {
+      $("#launch").disabled = true;
+      let pin; do { pin = String(Math.floor(100000 + Math.random() * 900000)); } while ((await getDoc(gref(pin))).exists());
+      await setDoc(gref(pin), { hostId: pid, status: "lobby", questions: setup.qs, minutes: setup.minutes, hacks: setup.hacks, createdAt: Date.now(), endsAt: 0 });
+      HostLobby(pin);
+    };
+  };
+  draw();
+}
+
+function HostLobby(pin) {
+  cleanup(); S.role = "host"; S.pin = pin;
+  go("hlobby", `<div class="wrap" style="min-height:100vh;display:flex;flex-direction:column">
+    <div class="row" style="justify-content:space-between;align-items:flex-start">
+      <div><div class="lbl mono" style="color:var(--g)">GA NAAR NAIMIT-NCS.WEB.APP EN GEBRUIK PIN</div><div class="pin-big">${pin}</div></div>
+      <div class="glass" style="padding:18px 26px;text-align:right"><div class="stat" style="font-size:2.4rem" id="cnt">0</div><div class="lbl">Hackers online</div></div>
+    </div>
+    <div class="hint mono" style="margin:8px 0 22px">Of deel: ${esc(location.origin + location.pathname)}?pin=${pin}</div>
+    <div class="grid pgrid" id="pl" style="flex:1;align-content:start"></div>
+    <button class="btn go big" id="start" style="margin-top:20px" disabled>COMMENCE OPERATIONS</button></div>`);
+  S.unsubs.push(onSnapshot(pcol(pin), s => {
+    S.players = s.docs.map(d => ({ id: d.id, ...d.data() }));
+    $("#cnt").textContent = S.players.length; $("#start").disabled = !S.players.length;
+    $("#pl").innerHTML = S.players.map(p => `<div class="chip"><span class="dot" style="background:${p.color}"></span>${esc(p.name)}</div>`).join("");
+  }));
+  $("#start").onclick = async () => {
+    const g = (await getDoc(gref(pin))).data();
+    await updateDoc(gref(pin), { status: "playing", endsAt: Date.now() + g.minutes * 60000 });
+    HostGame(pin);
+  };
+}
+
+function Board(players, meId, max = 10) {
+  const sorted = [...players].sort((a, b) => b.score - a.score);
+  return sorted.slice(0, max).map((p, i) => `<div class="lbrow ${p.id === meId ? "me" : ""}"><b class="rk">${i + 1}</b>
+    <div style="min-width:0"><div style="font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap"><span class="dot" style="display:inline-block;background:${p.color};margin-right:8px"></span>${esc(p.name)}${p.shield ? " 🛡️" : ""}${p.frozenUntil > Date.now() ? " 🧊" : ""}${p.multUntil > Date.now() ? " ⚡" : ""}</div></div>
+    <b class="mono" style="color:var(--y)">${fmt(p.score)}</b></div>`).join("");
+}
+
+function HostGame(pin) {
+  cleanup(); S.role = "host"; S.pin = pin;
+  go("hgame", `<div class="wrap">
+    <div class="row" style="justify-content:space-between;margin-bottom:18px">
+      <div><div class="lbl mono" style="color:var(--g)">LIVE OPERATION · PIN ${pin}</div><div class="timer" id="tm">0:00</div></div>
+      <button class="btn red" id="end">STOP SPEL</button></div>
+    <div class="grid" style="grid-template-columns:repeat(auto-fit,minmax(300px,1fr))">
+      <div class="glass" style="padding:18px"><div class="lbl">Leaderboard</div><div class="lb" id="lb"></div></div>
+      <div class="glass" style="padding:18px"><div class="lbl">Hack feed</div><div class="feed" id="feed"></div></div></div></div>`);
+  const stop = async () => { await updateDoc(gref(pin), { status: "ended" }); Podium(pin); };
+  $("#end").onclick = stop;
+  S.unsubs.push(onSnapshot(gref(pin), s => { S.game = s.data(); }));
+  S.unsubs.push(onSnapshot(pcol(pin), s => { S.players = s.docs.map(d => ({ id: d.id, ...d.data() })); $("#lb") && ($("#lb").innerHTML = Board(S.players, null, 12)); }));
+  S.unsubs.push(onSnapshot(query(ecol(pin), orderBy("t", "desc"), limit(10)), s => {
+    $("#feed") && ($("#feed").innerHTML = s.docs.map(d => d.data()).map(e => `<div class="${e.hack ? "h" : ""}">${esc(e.text)}</div>`).join("") || '<div>Wachten op actie...</div>');
+  }));
+  S.tick = setInterval(() => {
+    if (!S.game) return; const left = S.game.endsAt - Date.now();
+    $("#tm").textContent = fmtT(left); $("#tm").classList.toggle("low", left < 30000);
+    if (left <= 0) { clearInterval(S.tick); stop(); }
+  }, 250);
+}
+
+/* ---------- PLAYER ---------- */
+function Player(pin) {
+  cleanup(); S.role = "player"; S.pin = pin; S.me = null; S.game = null;
+  go("plobby", `<div class="center"><div class="spin"></div><h2 style="margin:0">Je zit erin, <span style="color:var(--g)" id="mn"></span></h2>
+    <p class="mono hint">Wachten tot de host het spel start...</p><div class="chip" id="cnt">...</div></div>`);
+  S.unsubs.push(onSnapshot(pref(pin, pid), s => { if (s.exists()) { const prev = S.me; S.me = { id: pid, ...s.data() }; $("#mn") && ($("#mn").textContent = S.me.name); onMe(prev); } }));
+  S.unsubs.push(onSnapshot(pcol(pin), s => { S.players = s.docs.map(d => ({ id: d.id, ...d.data() })); $("#cnt") && ($("#cnt").textContent = S.players.length + " hackers online"); $("#lb") && ($("#lb").innerHTML = Board(S.players, pid, 5)); }));
+  S.unsubs.push(onSnapshot(gref(pin), s => {
+    S.game = s.data();
+    if (S.game.status === "playing" && S.view === "plobby") PlayerGame();
+    if (S.game.status === "ended" && S.view !== "podium") Podium(pin);
+  }));
+}
+
+function onMe(prev) {
+  if (S.view !== "pgame" || !S.me) return;
+  const me = S.me;
+  if (prev && me.lastHit && (!prev.lastHit || prev.lastHit.at !== me.lastHit.at)) {
+    if (me.lastHit.blocked) { toast("🛡️ Firewall blokkeerde een hack van " + me.lastHit.by, "good"); sfx.ok(); }
+    else { toast(`${HACKS[me.lastHit.kind].ic} ${me.lastHit.by} gebruikte ${HACKS[me.lastHit.kind].n} op jou!` + (me.lastHit.amt ? ` (-${fmt(me.lastHit.amt)})` : ""), "bad", 3500); sfx.hit(); }
+  }
+  paint();
+}
+
+let G = null; // player-game local state
+function PlayerGame() {
+  const qs = S.game.questions;
+  G = { order: shuffle(qs.map((_, i) => i)), pos: 0, locked: false, picking: false, cur: null };
+  go("pgame", `<div>
+    <div class="topbar">
+      <div class="stat"><small>CREDITS</small><span id="sc" style="font-size:1.5rem;color:var(--y)">0</span></div>
+      <div class="stat" style="text-align:center"><small>STREAK</small><span id="stk">0</span></div>
+      <div class="stat" style="text-align:right"><small>TIJD</small><span id="tm" style="font-size:1.5rem;color:var(--g)">0:00</span></div>
+    </div>
+    <div class="wrap" style="max-width:820px">
+      <div class="fx" id="fx"></div>
+      <div class="bar"><div id="prog" style="width:0"></div></div>
+      <div class="glass qcard" id="qc"></div>
+      <div class="opts" id="opts"></div>
+      <div class="glass" style="padding:16px;margin-top:22px"><div class="lbl">Top 5</div><div class="lb" id="lb"></div></div>
+    </div></div><div id="layer"></div>`);
+  nextQ();
+  S.tick = setInterval(() => {
+    const left = S.game.endsAt - Date.now(); $("#tm") && ($("#tm").textContent = fmtT(left));
+    paint();
+    if (left <= -4000 && S.view !== "podium") Podium(S.pin);
+  }, 250);
+  paint();
+}
+
+function nextQ() {
+  const qs = S.game.questions;
+  if (G.pos >= G.order.length) { G.order = shuffle(G.order); G.pos = 0; }
+  const q = qs[G.order[G.pos++]];
+  const opts = shuffle([q.a, ...q.options]).slice(0, 4);
+  if (!opts.includes(q.a)) opts[0] = q.a;
+  G.cur = { q, opts: shuffle(opts) }; G.locked = false; G.shownAt = Date.now();
+  $("#qc").textContent = q.q;
+  $("#opts").innerHTML = G.cur.opts.map((o, i) => `<button class="opt o${i}" data-i="${i}"><i>${LET[i]}</i><span>${esc(o)}</span></button>`).join("");
+  document.querySelectorAll(".opt").forEach(b => b.onclick = () => answer(+b.dataset.i, b));
+}
+
+async function answer(i, btn) {
+  const me = S.me; if (G.locked || G.picking || !me || me.frozenUntil > Date.now() || S.game.endsAt < Date.now()) return;
+  G.locked = true;
+  const ok = G.cur.opts[i] === G.cur.q.a;
+  if (ok) {
+    btn.classList.add("ok"); sfx.ok();
+    const mult = me.multUntil > Date.now() ? 2 : 1;
+    const fast = Date.now() - G.shownAt < 3000 ? 1.5 : 1;
+    const pts = Math.round((100 + Math.min(me.streak, 10) * 15) * mult * fast);
+    const correct = (me.correct || 0) + 1;
+    await updateDoc(pref(S.pin, pid), { score: increment(pts), streak: increment(1), correct: increment(1) });
+    toast(`+${pts} credits${mult > 1 ? " ⚡" : ""}${fast > 1 ? " 🚀 snel!" : ""}`, "good", 900);
+    if (S.game.hacks && correct % 3 === 0) { setTimeout(offerHacks, 500); return; }
+    setTimeout(nextQ, 450);
+  } else {
+    btn.classList.add("bad", "shake"); sfx.bad();
+    document.querySelectorAll(".opt").forEach(b => { if (G.cur.opts[+b.dataset.i] === G.cur.q.a) b.classList.add("ok"); });
+    await updateDoc(pref(S.pin, pid), { streak: 0, wrong: increment(1) });
+    setTimeout(nextQ, 1500);
+  }
+}
+
+function paint() {
+  const me = S.me; if (!me || S.view !== "pgame") return; const now = Date.now();
+  $("#sc").textContent = fmt(me.score); $("#stk").textContent = me.streak + "🔥";
+  $("#prog").style.width = ((me.correct || 0) % 3) / 3 * 100 + "%";
+  $("#fx").innerHTML = (me.shield ? '<span class="tag t-sh">🛡️ FIREWALL</span>' : "") + (me.multUntil > now ? `<span class="tag t-ml">⚡ x2 ${Math.ceil((me.multUntil - now) / 1000)}s</span>` : "")
+    + `<span class="tag" style="color:#94a3b8;border-color:#334155">${3 - ((me.correct || 0) % 3)} goed = hack</span>`;
+  $("#lb").innerHTML = Board(S.players, pid, 5);
+  const bo = S.game && S.game.blackout; const lay = $("#layer");
+  if (bo && bo.until > now && bo.by !== pid && !G.picking) { lay.innerHTML = `<div class="frozen" style="background:#000;backdrop-filter:none"><div style="font-size:4rem">🌑</div>BLACKOUT door ${esc(bo.name)}<div class="timer" style="color:#fff">${Math.ceil((bo.until - now) / 1000)}</div></div>`; return; }
+  if (me.frozenUntil > now && !G.picking) lay.innerHTML = `<div class="frozen"><div style="font-size:4rem">🧊</div>GEHACKT: FROZEN<div class="timer" style="color:#fff">${Math.ceil((me.frozenUntil - now) / 1000)}</div></div>`;
+  else if (lay.firstChild && lay.firstChild.classList && lay.firstChild.classList.contains("frozen")) lay.innerHTML = "";
+}
+
+function offerHacks() {
+  G.picking = true; sfx.hack();
+  const hand = shuffle(HKEYS).slice(0, 3);
+  $("#layer").innerHTML = `<div class="modal"><div class="box glass neon"><div class="lbl mono" style="color:var(--g)">ACCESS GRANTED</div><h2 style="margin:0">Kies je hack</h2>
+    <div class="cards">${hand.map(k => `<button class="hcard" style="--c:${HACKS[k].c}" data-k="${k}"><div class="ic">${HACKS[k].ic}</div><b>${HACKS[k].n}</b><span>${HACKS[k].d}</span></button>`).join("")}</div></div></div>`;
+  document.querySelectorAll(".hcard").forEach(b => b.onclick = () => pickHack(b.dataset.k));
+}
+
+function pickHack(k) {
+  const H = HACKS[k];
+  if (!H.t) return runHack(k, null);
+  const targets = S.players.filter(p => p.id !== pid).sort((a, b) => b.score - a.score).slice(0, 12);
+  if (!targets.length) { toast("Geen doelwitten online", "bad"); return endPick(); }
+  $("#layer").innerHTML = `<div class="modal"><div class="box glass neon"><div class="lbl mono" style="color:${H.c}">${H.ic} ${H.n} · KIES DOELWIT</div>
+    <div class="lb" style="margin-top:12px">${targets.map(p => `<button class="lbrow" data-t="${p.id}" style="text-align:left;color:#fff"><b class="rk">🎯</b><span style="font-weight:700">${esc(p.name)}${p.shield ? " 🛡️" : ""}</span><b class="mono" style="color:var(--y)">${fmt(p.score)}</b></button>`).join("")}</div></div></div>`;
+  document.querySelectorAll("[data-t]").forEach(b => b.onclick = () => runHack(k, b.dataset.t));
+}
+
+function endPick() { G.picking = false; $("#layer").innerHTML = ""; nextQ(); }
+
+async function runHack(k, tid) {
+  const H = HACKS[k], me = S.me; let text = "";
+  try {
+    if (k === "overclock") { await updateDoc(pref(S.pin, pid), { multUntil: Date.now() + 20000 }); text = `${me.name} activeerde Overclock`; }
+    else if (k === "firewall") { await updateDoc(pref(S.pin, pid), { shield: true }); text = `${me.name} zette een Firewall op`; }
+    else if (k === "blackout") { await updateDoc(gref(S.pin), { blackout: { by: pid, name: me.name, until: Date.now() + 5000 } }); text = `${me.name} activeerde BLACKOUT`; }
+    else if (k === "jackpot") { await updateDoc(pref(S.pin, pid), { score: increment(250) }); text = `${me.name} won de Jackpot (+250)`; }
+    else {
+      const res = await runTransaction(db, async tx => {
+        const tr = pref(S.pin, tid), mr = pref(S.pin, pid);
+        const [ts, ms] = await Promise.all([tx.get(tr), tx.get(mr)]);
+        const t = ts.data(), m = ms.data(), at = Date.now();
+        if (t.shield) { tx.update(tr, { shield: false, lastHit: { by: m.name, kind: k, blocked: true, at } }); return { blocked: true, name: t.name }; }
+        if (k === "swap") { if (m.score >= t.score) return { nope: true, name: t.name }; tx.update(tr, { score: m.score, lastHit: { by: m.name, kind: k, amt: t.score - m.score, at } }); tx.update(mr, { score: t.score }); return { amt: t.score - m.score, name: t.name }; }
+        if (k === "steal") { const amt = Math.floor(t.score * .15); tx.update(tr, { score: t.score - amt, lastHit: { by: m.name, kind: k, amt, at } }); tx.update(mr, { score: m.score + amt }); return { amt, name: t.name }; }
+        if (k === "virus") { const amt = Math.min(150, t.score); tx.update(tr, { score: t.score - amt, lastHit: { by: m.name, kind: k, amt, at } }); return { amt, name: t.name }; }
+        tx.update(tr, { frozenUntil: at + 6000, lastHit: { by: m.name, kind: k, at } }); return { name: t.name };
+      });
+      if (res.nope) { text = `${me.name} probeerde te swappen met ${res.name}`; toast("Swap mislukt: jij hebt al meer credits", "bad"); }
+      else if (res.blocked) { text = `${me.name} faalde: ${res.name} had een Firewall`; toast("Geblokkeerd door een Firewall 🛡️", "bad"); }
+      else { text = `${me.name} → ${H.n} → ${res.name}` + (res.amt ? ` (${res.amt})` : ""); toast(`${H.ic} ${H.n} geslaagd${res.amt ? ": " + res.amt + " credits" : ""}`, "good"); }
+    }
+    sfx.hack();
+    addDoc(ecol(S.pin), { t: Date.now(), hack: true, text });
+  } catch (e) { toast("Hack mislukt: " + e.message, "bad"); }
+  endPick();
+}
+
+/* ---------- PODIUM ---------- */
+function Podium(pin) {
+  cleanup(); S.role = S.role || "player";
+  go("podium", `<div class="wrap" style="max-width:700px"><div class="center" style="min-height:0;padding-top:30px"><div class="lbl mono" style="color:var(--g)">OPERATION COMPLETE</div><h1 style="margin:0;font-size:2.6rem">Eindstand</h1></div>
+    <div class="podium" id="pod"></div><div class="glass" style="padding:16px"><div class="lb" id="lb"></div></div>
+    <div class="row" style="justify-content:center;margin-top:24px"><button class="btn go big" id="home">Nog een keer</button></div></div>`);
+  $("#home").onclick = Home;
+  S.unsubs.push(onSnapshot(pcol(pin), s => {
+    const ps = s.docs.map(d => ({ id: d.id, ...d.data() })).sort((a, b) => b.score - a.score);
+    const order = [[1, "p2"], [0, "p1"], [2, "p3"]].filter(([i]) => ps[i]);
+    $("#pod") && ($("#pod").innerHTML = order.map(([i, c]) => `<div class="pod ${c}"><div style="font-size:1.8rem">${["🥇", "🥈", "🥉"][i]}</div><div class="n">${esc(ps[i].name)}</div><div class="s">${fmt(ps[i].score)}</div></div>`).join(""));
+    $("#lb") && ($("#lb").innerHTML = Board(ps, pid, 50));
+  }));
+}
+
+Home();
+</script>
+</body>
+</html>
