@@ -192,42 +192,89 @@ function cleanup() { S.unsubs.forEach(u => u()); S.unsubs = []; clearInterval(S.
 function go(view, html) { S.view = view; root.innerHTML = html; window.scrollTo(0, 0); }
 
 /* ---------- HOME ---------- */
-function Home() {
+function copy(text, label) {
+  const done = () => toast((label || "Gekopieerd") + " ✓", "good", 1500);
+  if (navigator.clipboard && window.isSecureContext) navigator.clipboard.writeText(text).then(done, () => fallback());
+  else fallback();
+  function fallback() { const t = document.createElement("textarea"); t.value = text; document.body.appendChild(t); t.select(); try { document.execCommand("copy"); done(); } catch { toast("Kopieer handmatig: " + text, "bad", 4000); } t.remove(); }
+}
+
+function Home(prefill) {
   cleanup(); S = { role: null, pin: null, game: null, players: [], events: [], view: "home", unsubs: [] };
-  const qpin = new URLSearchParams(location.search).get("pin") || "";
+  const qpin = (typeof prefill === "string" ? prefill : new URLSearchParams(location.search).get("pin") || "").replace(/\D/g, "").slice(0, 6);
+  if (qpin.length === 6) return checkPin(qpin, true);
   go("home", `<div class="center">
     <h1 class="logo">NAIMIT</h1><div class="sub mono">CYBER BATTLEGROUND</div>
     <div class="stack glass neon" style="padding:22px">
-      <div><div class="lbl">Game PIN</div><input id="pin" class="pin-in" inputmode="numeric" maxlength="6" placeholder="000000" value="${esc(qpin)}"></div>
-      <div><div class="lbl">Hackernaam</div><input id="name" maxlength="14" placeholder="bv. Ghost" value="${esc(localStorage.pname || "")}"></div>
-      <button class="btn go big" id="join">JOIN SPEL</button>
+      <div><div class="lbl">Stap 1 · Voer de game PIN in</div><input id="pin" class="pin-in" inputmode="numeric" autocomplete="off" maxlength="6" placeholder="000000" autofocus></div>
+      <button class="btn go big" id="next" disabled>VERDER →</button>
       <div class="err" id="err"></div>
     </div>
-    <div class="stack" style="margin-top:14px"><button class="btn" id="host">HOST SPEL</button></div>
-    <div class="mono hint" style="margin-top:34px">V2.0 · QUIZ + HACKS · GEEN INLOG NODIG</div>
+    <div class="stack" style="margin-top:14px"><button class="btn" id="host">Zelf een spel hosten</button><button class="btn" id="how" style="background:none;border-style:dashed">Hoe werkt het?</button></div>
+    <div class="mono hint" style="margin-top:34px">NAIMIT · QUIZ + HACKS · GEEN ACCOUNT NODIG</div>
   </div>`);
+  const pin = $("#pin");
+  pin.focus();
+  pin.oninput = () => { pin.value = pin.value.replace(/\D/g, ""); $("#next").disabled = pin.value.length !== 6; $("#err").textContent = ""; if (pin.value.length === 6) go2(); };
+  const go2 = () => pin.value.length === 6 && checkPin(pin.value);
+  $("#next").onclick = go2;
+  pin.onkeydown = e => e.key === "Enter" && go2();
   $("#host").onclick = HostSetup;
-  $("#join").onclick = async () => {
-    const pin = $("#pin").value.trim(), name = $("#name").value.trim();
-    const err = m => $("#err").textContent = m;
-    if (pin.length !== 6) return err("Vul een PIN van 6 cijfers in.");
-    if (!name) return err("Kies een hackernaam.");
+  $("#how").onclick = HowTo;
+}
+
+function HowTo() {
+  const m = document.createElement("div"); m.className = "modal";
+  m.innerHTML = `<div class="box glass neon"><h2 style="margin-top:0">Zo werkt Naimit</h2>
+   <div class="feed" style="font-family:inherit;font-size:1rem;gap:10px">
+    <div><b>1. Host</b> kiest vragen en start een spel. Je krijgt een PIN, link en QR-code.</div>
+    <div><b>2. Spelers</b> vullen de PIN in en kiezen een hackernaam.</div>
+    <div><b>3. Beantwoord vragen</b> in je eigen tempo. Snel en achter elkaar goed = meer credits.</div>
+    <div><b>4. Elke 3 goede antwoorden</b> kies je een hack: pak credits af, bevries, swap of blokkeer anderen.</div>
+    <div><b>5. Wie na de tijd de meeste credits heeft</b> wint. Gebruik een Firewall om jezelf te beschermen!</div></div>
+   <button class="btn go" style="margin-top:18px;width:100%" id="ok">Snap ik, laten we gaan</button></div>`;
+  document.body.appendChild(m); m.querySelector("#ok").onclick = () => m.remove();
+}
+
+async function checkPin(pin, fromLink) {
+  const showErr = msg => { if (S.view === "home" && $("#err")) { $("#err").textContent = msg; $("#pin").select(); } else { history.replaceState(null, "", location.pathname); Home(""); setTimeout(() => $("#err") && ($("#err").textContent = msg), 50); } };
+  if (S.view === "home" && $("#err")) $("#err").textContent = "Zoeken...";
+  try {
+    const s = await getDoc(gref(pin));
+    if (!s.exists()) return showErr("Geen spel gevonden met PIN " + pin + ". Check de cijfers.");
+    if (s.data().status === "ended") return showErr("Dit spel is al afgelopen.");
+    NameStep(pin);
+  } catch (e) { showErr("Geen verbinding: " + e.message); }
+}
+
+function NameStep(pin) {
+  go("name", `<div class="center">
+    <h1 class="logo" style="font-size:clamp(2.4rem,9vw,4rem)">NAIMIT</h1><div class="sub mono">SPEL ${esc(pin)} GEVONDEN ✓</div>
+    <div class="stack glass neon" style="padding:22px">
+      <div><div class="lbl">Stap 2 · Kies je hackernaam</div><input id="name" maxlength="14" autocomplete="off" placeholder="bv. Ghost" value="${esc(localStorage.pname || "")}"></div>
+      <button class="btn go big" id="join">START MET SPELEN</button>
+      <div class="err" id="err"></div>
+    </div>
+    <div class="stack" style="margin-top:14px"><button class="btn" id="back">← Andere PIN</button></div></div>`);
+  const name = $("#name"); name.focus(); name.select();
+  $("#back").onclick = () => { history.replaceState(null, "", location.pathname); Home(""); };
+  const join = async () => {
+    const n = name.value.trim(); const err = m => $("#err").textContent = m;
+    if (!n) return err("Typ eerst een naam.");
     $("#join").disabled = true; err("Verbinden...");
     try {
       const s = await getDoc(gref(pin));
-      if (!s.exists()) { $("#join").disabled = false; return err("Geen spel gevonden met deze PIN."); }
-      const g = s.data();
-      if (g.status === "ended") { $("#join").disabled = false; return err("Dit spel is al afgelopen."); }
-      localStorage.pname = name;
-      const me = { name, score: 0, streak: 0, correct: 0, wrong: 0, shield: false, frozenUntil: 0, multUntil: 0, color: COLORS[Math.floor(Math.random() * COLORS.length)], lastHit: null, joinedAt: Date.now() };
-      await setDoc(pref(pin, pid), me);
+      if (!s.exists() || s.data().status === "ended") { $("#join").disabled = false; return err("Dit spel is niet meer beschikbaar."); }
+      localStorage.pname = n;
+      const old = await getDoc(pref(pin, pid));
+      const me = old.exists() ? { name: n } : { name: n, score: 0, streak: 0, correct: 0, wrong: 0, shield: false, frozenUntil: 0, multUntil: 0, color: COLORS[Math.floor(Math.random() * COLORS.length)], lastHit: null, joinedAt: Date.now() };
+      await setDoc(pref(pin, pid), me, { merge: true });
+      history.replaceState(null, "", location.pathname);
       Player(pin);
     } catch (e) { $("#join").disabled = false; err("Fout: " + e.message); }
   };
-  $("#pin").addEventListener("keydown", e => e.key === "Enter" && $("#name").focus());
-  $("#name").addEventListener("keydown", e => e.key === "Enter" && $("#join").click());
+  $("#join").onclick = join; name.onkeydown = e => e.key === "Enter" && join();
 }
-
 /* ---------- HOST ---------- */
 let setup = { qs: structuredClone(PRESETS["Cyber & ICT"]), minutes: 5, hacks: true };
 function HostSetup() {
@@ -291,17 +338,21 @@ function HostLobby(pin) {
   cleanup(); S.role = "host"; S.pin = pin;
   go("hlobby", `<div class="wrap" style="min-height:100vh;display:flex;flex-direction:column">
     <div class="row" style="justify-content:space-between;align-items:flex-start">
-      <div><div class="lbl mono" style="color:var(--g)">GA NAAR NAIMIT-NCS.WEB.APP EN GEBRUIK PIN</div><div class="pin-big">${pin}</div></div>
+      <div><div class="lbl mono" style="color:var(--g)">GA NAAR NAIMIT-NCS.WEB.APP EN VOER DEZE PIN IN</div><div class="pin-big">${pin}</div>
+        <div class="row" style="margin-top:14px"><button class="btn go" id="cpin">📋 Kopieer PIN</button><button class="btn go" id="clink">🔗 Kopieer link</button></div></div>
+      <img alt="QR" class="glass" style="width:150px;height:150px;border-radius:14px;background:#fff;padding:6px" src="https://api.qrserver.com/v1/create-qr-code/?size=300x300&margin=0&data=${encodeURIComponent(location.origin + location.pathname + "?pin=" + pin)}">
       <div class="glass" style="padding:18px 26px;text-align:right"><div class="stat" style="font-size:2.4rem" id="cnt">0</div><div class="lbl">Hackers online</div></div>
     </div>
-    <div class="hint mono" style="margin:8px 0 22px">Of deel: ${esc(location.origin + location.pathname)}?pin=${pin}</div>
+    <div class="hint mono" style="margin:12px 0 22px">Spelers scannen de QR-code of openen: ${esc(location.origin + location.pathname)}?pin=${pin}</div>
     <div class="grid pgrid" id="pl" style="flex:1;align-content:start"></div>
-    <button class="btn go big" id="start" style="margin-top:20px" disabled>COMMENCE OPERATIONS</button></div>`);
+    <button class="btn go big" id="start" style="margin-top:20px" disabled>Wachten op spelers...START HET SPEL</button></div>`);
   S.unsubs.push(onSnapshot(pcol(pin), s => {
     S.players = s.docs.map(d => ({ id: d.id, ...d.data() }));
-    $("#cnt").textContent = S.players.length; $("#start").disabled = !S.players.length;
-    $("#pl").innerHTML = S.players.map(p => `<div class="chip"><span class="dot" style="background:${p.color}"></span>${esc(p.name)}</div>`).join("");
+    $("#cnt").textContent = S.players.length; $("#start").disabled = !S.players.length; $("#start").textContent = S.players.length ? "START HET SPEL (" + S.players.length + " speler" + (S.players.length > 1 ? "s" : "") + ")" : "Wachten op spelers...";
+    $("#pl").innerHTML = (S.players.length ? "" : `<div class="hint" style="grid-column:1/-1">Nog niemand binnen. Deel de PIN, link of QR-code.</div>`) + S.players.map(p => `<div class="chip"><span class="dot" style="background:${p.color}"></span>${esc(p.name)}</div>`).join("");
   }));
+  $("#cpin").onclick = () => copy(pin, "PIN gekopieerd");
+  $("#clink").onclick = () => copy(location.origin + location.pathname + "?pin=" + pin, "Link gekopieerd");
   $("#start").onclick = async () => {
     const g = (await getDoc(gref(pin))).data();
     await updateDoc(gref(pin), { status: "playing", endsAt: Date.now() + g.minutes * 60000 });
@@ -381,6 +432,7 @@ function PlayerGame() {
       <div class="glass" style="padding:16px;margin-top:22px"><div class="lbl">Top 5</div><div class="lb" id="lb"></div></div>
     </div></div><div id="layer"></div>`);
   nextQ();
+  if (!localStorage.seenTip) { localStorage.seenTip = 1; setTimeout(() => toast("Tip: 3 goede antwoorden = een hack!", "good", 4500), 600); }
   S.tick = setInterval(() => {
     const left = S.game.endsAt - Date.now(); $("#tm") && ($("#tm").textContent = fmtT(left));
     paint();
@@ -489,7 +541,7 @@ function Podium(pin) {
   cleanup(); S.role = S.role || "player";
   go("podium", `<div class="wrap" style="max-width:700px"><div class="center" style="min-height:0;padding-top:30px"><div class="lbl mono" style="color:var(--g)">OPERATION COMPLETE</div><h1 style="margin:0;font-size:2.6rem">Eindstand</h1></div>
     <div class="podium" id="pod"></div><div class="glass" style="padding:16px"><div class="lb" id="lb"></div></div>
-    <div class="row" style="justify-content:center;margin-top:24px"><button class="btn go big" id="home">Nog een keer</button></div></div>`);
+    <div class="row" style="justify-content:center;margin-top:24px"><button class="btn go big" id="home">Terug naar start</button></div></div>`);
   $("#home").onclick = Home;
   S.unsubs.push(onSnapshot(pcol(pin), s => {
     const ps = s.docs.map(d => ({ id: d.id, ...d.data() })).sort((a, b) => b.score - a.score);
