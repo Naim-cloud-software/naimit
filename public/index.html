@@ -417,8 +417,8 @@ function Home(prefill) {
       </div>
       <div class="card hl">
         <label class="lbl" for="pin">Meedoen met een spel</label>
-        <input id="pin" class="pin-in" inputmode="numeric" pattern="[0-9]*" autocomplete="off" maxlength="6" placeholder="PIN" aria-label="Game PIN">
-        <button class="btn pri blk lg mt" id="next" disabled>Verder</button>
+        <input id="pin" class="pin-in" type="text" inputmode="numeric" autocomplete="off" autocorrect="off" spellcheck="false" placeholder="000000" aria-label="Game PIN">
+        <button class="btn pri blk lg mt" id="next">Verder</button>
         <div class="err" id="err"></div>
         <button class="btn blk mt" id="resume" hidden></button>
       </div>
@@ -433,8 +433,18 @@ function Home(prefill) {
   if (innerWidth < 860) { $("#mob").style.display = "grid"; $("#mob").style.gap = "10px"; }
   const pin = $("#pin"); if (innerWidth > 860) pin.focus();
   const nx = () => pin.value.length === 6 && checkPin(pin.value);
-  pin.oninput = () => { pin.value = pin.value.replace(/\D/g, ""); $("#next").disabled = pin.value.length !== 6; $("#err").textContent = ""; if (pin.value.length === 6) nx(); };
-  $("#next").onclick = nx; pin.onkeydown = e => e.key === "Enter" && nx();
+  let busy = false;
+  const digits = () => pin.value.replace(/\D/g, "").slice(0, 6);
+  pin.addEventListener("input", e => {
+    if (e.isComposing) return;
+    const v = digits(); if (v !== pin.value) pin.value = v;
+    $("#err").textContent = ""; $("#next").disabled = v.length < 6;
+    if (v.length === 6 && !busy) { busy = true; checkPin(v).finally(() => busy = false); }
+  });
+  pin.addEventListener("compositionend", () => pin.dispatchEvent(new Event("input", { bubbles: true })));
+  pin.addEventListener("paste", () => setTimeout(() => pin.dispatchEvent(new Event("input", { bubbles: true })), 0));
+  $("#next").onclick = () => { const v = digits(); if (v.length < 6) { $("#err").textContent = "Een PIN heeft 6 cijfers."; return; } if (!busy) { busy = true; checkPin(v).finally(() => busy = false); } };
+  pin.addEventListener("keydown", e => e.key === "Enter" && $("#next").click());
   for (const id of ["host", "host2"]) $("#" + id) && ($("#" + id).onclick = HostSetup);
   for (const id of ["how", "how2"]) $("#" + id) && ($("#" + id).onclick = HowTo);
   try {
