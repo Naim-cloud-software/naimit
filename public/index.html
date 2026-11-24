@@ -2,116 +2,197 @@
 <html lang="nl">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Naimit: Cyber Battle</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Naimit - Quiz, hack en win</title>
+<meta name="description" content="Naimit is een multiplayer quizspel met hacks. Host een spel, deel de PIN en speel met je klas of vrienden. Geen account nodig.">
+<meta name="theme-color" content="#0a0c10">
+<meta property="og:title" content="Naimit - Quiz, hack en win">
+<meta property="og:description" content="Multiplayer quizspel met hacks. Geen account nodig.">
 <link rel="icon" type="image/svg+xml" href="/favicon.svg">
 <link rel="apple-touch-icon" href="/favicon.svg">
-<meta name="theme-color" content="#020617">
-<meta name="description" content="Naimit - quiz, hack je tegenstanders en pak de eerste plek.">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;600;700&family=JetBrains+Mono:wght@400;700&display=swap');
-:root{--g:#4ade80;--b:#3b82f6;--bg:#020617;--card:rgba(15,23,42,.8);--line:rgba(148,163,184,.18);--r:#f43f5e;--y:#fbbf24;--p:#a855f7}
-*{box-sizing:border-box}
-html,body{margin:0;min-height:100%}
-body{font-family:'Space Grotesk',sans-serif;background:var(--bg);color:#f8fafc;overflow-x:hidden;
-background-image:radial-gradient(circle at 50% 0%,rgba(59,130,246,.12),transparent 50%),radial-gradient(circle at 0 100%,rgba(74,222,128,.08),transparent 40%)}
-body:before{content:"";position:fixed;inset:0;pointer-events:none;background-image:linear-gradient(rgba(74,222,128,.045) 1px,transparent 1px),linear-gradient(90deg,rgba(74,222,128,.045) 1px,transparent 1px);background-size:48px 48px;mask-image:radial-gradient(ellipse at center,#000,transparent 80%)}
-#matrix{position:fixed;inset:0;z-index:0;opacity:.18;pointer-events:none}
-#root{position:relative;z-index:1;min-height:100vh}
+:root{--bg:#0a0c10;--s1:#11141b;--s2:#171b24;--s3:#1e2330;--line:#252b3a;--tx:#e8ebf2;--mut:#8a92a6;--ac:#3ddc97;--ac-d:#0f3d2b;--blue:#5b8cff;--bad:#ff5d6c;--warn:#f5b84b;--r:14px;--sp:env(safe-area-inset-bottom)}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;min-height:100vh;min-height:100dvh;background:var(--bg);color:var(--tx);font:400 16px/1.5 Inter,system-ui,sans-serif;-webkit-font-smoothing:antialiased;
+background-image:radial-gradient(1200px 500px at 70% -10%,rgba(91,140,255,.10),transparent 60%),radial-gradient(900px 400px at 0% 0%,rgba(61,220,151,.07),transparent 55%)}
+h1,h2,h3,p{margin:0}
+button,input,textarea,select{font:inherit;color:inherit}
+button{cursor:pointer;border:0;background:none}
+a{color:var(--ac);text-decoration:none}
 .mono{font-family:'JetBrains Mono',monospace}
-.wrap{max-width:1000px;margin:0 auto;padding:24px 18px}
-.center{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:20px;text-align:center}
-.glass{background:var(--card);backdrop-filter:blur(12px);border:1px solid var(--line);border-radius:20px;box-shadow:0 10px 40px rgba(0,0,0,.5)}
-.neon{border-color:var(--g);box-shadow:0 0 22px rgba(74,222,128,.25)}
-h1.logo{font-size:clamp(3rem,13vw,6rem);margin:0;font-weight:700;letter-spacing:-.02em;text-shadow:.04em 0 0 #00fffc,-.03em -.03em 0 #fc00ff;animation:gl 2.4s infinite}
-@keyframes gl{0%,90%,100%{text-shadow:.04em 0 0 #00fffc,-.03em -.03em 0 #fc00ff}92%{text-shadow:-.05em -.02em 0 #00fffc,.03em .03em 0 #fc00ff;transform:translateX(2px)}95%{text-shadow:.05em .03em 0 #00fffc,.03em 0 0 #fc00ff;transform:translateX(-2px)}}
-.sub{color:var(--g);letter-spacing:.3em;font-size:.78rem;margin:6px 0 30px}
-input,textarea{width:100%;background:rgba(2,6,23,.7);color:#fff;border:1px solid #334155;border-radius:12px;padding:14px 16px;font:inherit;font-size:1rem;outline:none}
-input:focus,textarea:focus{border-color:var(--g)}
-.pin-in{text-align:center;font-size:2rem;letter-spacing:.4em;font-family:'JetBrains Mono',monospace;font-weight:700}
-button{font:inherit;cursor:pointer;border:0;color:#fff}
-.btn{padding:15px 22px;border-radius:14px;font-weight:700;font-size:1rem;background:#1e293b;border:1px solid #334155;transition:.15s}
-.btn:hover{transform:translateY(-2px);border-color:var(--g)}
-.btn:active{transform:scale(.97)}
-.btn.go{background:linear-gradient(135deg,#22c55e,#16a34a);border-color:#4ade80;color:#04130a;box-shadow:0 0 24px rgba(74,222,128,.35)}
-.btn.red{background:#7f1d1d;border-color:#f43f5e}
-.btn.big{padding:20px 26px;font-size:1.3rem}
-.btn[disabled]{opacity:.4;pointer-events:none}
-.stack{display:grid;gap:12px;width:100%;max-width:380px}
-.row{display:flex;gap:12px;flex-wrap:wrap;align-items:center}
-.lbl{font-size:.68rem;letter-spacing:.2em;color:#94a3b8;text-transform:uppercase;margin:0 0 6px}
-.err{color:#fb7185;min-height:1.3em;font-size:.9rem;margin-top:6px}
-.pin-big{font-size:clamp(4rem,16vw,9rem);font-weight:700;letter-spacing:.06em;color:var(--g);text-shadow:0 0 30px rgba(74,222,128,.6);font-family:'JetBrains Mono',monospace;line-height:1}
-.chip{display:flex;align-items:center;gap:8px;padding:10px 14px;border-radius:12px;background:rgba(30,41,59,.7);border:1px solid var(--line);font-weight:600;animation:pop .35s}
-@keyframes pop{from{transform:scale(.6);opacity:0}to{transform:none;opacity:1}}
-.dot{width:9px;height:9px;border-radius:50%;background:var(--g);box-shadow:0 0 8px var(--g)}
-.grid{display:grid;gap:12px}
-.pgrid{grid-template-columns:repeat(auto-fill,minmax(150px,1fr))}
-.topbar{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:12px 16px;position:sticky;top:0;z-index:5;background:rgba(2,6,23,.85);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
-.stat{font-family:'JetBrains Mono',monospace;font-weight:700}
-.stat small{display:block;color:#94a3b8;font-size:.6rem;letter-spacing:.2em;font-weight:400}
-.qcard{padding:28px 22px;text-align:center;font-size:clamp(1.3rem,4vw,2.1rem);font-weight:700;margin:18px 0}
+[hidden]{display:none!important}
+*{scrollbar-width:thin;scrollbar-color:#2a3144 transparent}
+::-webkit-scrollbar{width:8px;height:8px}::-webkit-scrollbar-thumb{background:#2a3144;border-radius:8px}::-webkit-scrollbar-track{background:transparent}
+svg.i{width:1.15em;height:1.15em;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;flex:none}
+/* header */
+#hdr{position:sticky;top:0;z-index:30;background:rgba(10,12,16,.82);backdrop-filter:blur(14px);border-bottom:1px solid var(--line)}
+.hin{max-width:1120px;margin:0 auto;padding:0 20px;height:60px;display:flex;align-items:center;justify-content:space-between;gap:12px}
+.brand{display:flex;align-items:center;gap:10px;font-weight:800;font-size:1.15rem;letter-spacing:-.01em}
+.brand svg{width:30px;height:30px}
+.hr{display:flex;align-items:center;gap:8px}
+.ib{width:40px;height:40px;border-radius:10px;display:grid;place-items:center;color:var(--mut);border:1px solid transparent}
+.ib:hover{background:var(--s2);color:var(--tx)}
+/* layout */
+main{min-height:calc(100dvh - 60px)}
+.wrap{max-width:1120px;margin:0 auto;padding:28px 20px 60px}
+.narrow{max-width:720px}
+.card{background:var(--s1);border:1px solid var(--line);border-radius:var(--r);padding:22px}
+.card.hl{border-color:rgba(61,220,151,.35);box-shadow:0 0 0 4px rgba(61,220,151,.05)}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.grid{display:grid;gap:14px}
+.between{justify-content:space-between}
+.mt{margin-top:16px}.mt2{margin-top:28px}
+.mut{color:var(--mut)}.sm{font-size:.875rem}.xs{font-size:.75rem}
+.lbl{font-size:.75rem;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--mut);margin-bottom:8px;display:block}
+/* controls */
+input,textarea,select{width:100%;background:var(--bg);border:1px solid var(--line);border-radius:12px;padding:13px 14px;font-size:16px;outline:none;transition:border .15s,box-shadow .15s}
+input:focus,textarea:focus,select:focus{border-color:var(--ac);box-shadow:0 0 0 3px rgba(61,220,151,.15)}
+input::placeholder,textarea::placeholder{color:#566079}
+input[type=checkbox]{width:18px;height:18px;accent-color:var(--ac);padding:0}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:12px 18px;border-radius:12px;font-weight:600;background:var(--s2);border:1px solid var(--line);transition:.15s;min-height:46px}
+.btn:hover{background:var(--s3);border-color:#323a4f}
+.btn:active{transform:scale(.98)}
+.btn.pri{background:var(--ac);color:#04140d;border-color:var(--ac)}
+.btn.pri:hover{background:#52e6a7}
+.btn.dng{color:var(--bad);border-color:rgba(255,93,108,.3)}
+.btn.ghost{background:none}
+.btn.blk{width:100%}
+.btn.lg{min-height:54px;font-size:1.05rem}
+.btn.s{min-height:36px;padding:7px 12px;font-size:.875rem;border-radius:10px}
+.btn[disabled]{opacity:.45;pointer-events:none}
+.seg{display:inline-flex;background:var(--bg);border:1px solid var(--line);border-radius:12px;padding:3px;gap:2px}
+.seg button{padding:8px 14px;border-radius:9px;font-weight:600;color:var(--mut);min-height:38px}
+.seg button.on{background:var(--s3);color:var(--tx)}
+.err{color:var(--bad);font-size:.875rem;min-height:1.3em;margin-top:8px}
+/* home */
+.hero{display:grid;grid-template-columns:1.15fr .85fr;gap:48px;align-items:center;padding:56px 0 40px}
+.hero h1{font-size:clamp(2.4rem,6vw,4.1rem);line-height:1.04;font-weight:800;letter-spacing:-.035em}
+.hero h1 em{font-style:normal;color:var(--ac)}
+.hero p.lead{font-size:1.15rem;color:var(--mut);margin-top:18px;max-width:520px}
+.pin-in{text-align:center;font-family:'JetBrains Mono',monospace;font-size:2rem;font-weight:700;letter-spacing:.35em;padding:16px 10px 16px 24px}
+.feat{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:20px}
+.feat .card{padding:20px}
+.feat .ic{width:40px;height:40px;border-radius:10px;background:var(--ac-d);color:var(--ac);display:grid;place-items:center;margin-bottom:12px}
+.feat h3{font-size:1rem;margin-bottom:4px}
+.feat p{color:var(--mut);font-size:.9rem}
+footer.f{border-top:1px solid var(--line);padding:22px 20px;text-align:center;color:var(--mut);font-size:.8rem;margin-top:30px}
+/* avatars / lists */
+.av{display:inline-grid;place-items:center;width:30px;height:30px;border-radius:50%;font-weight:700;font-size:.8rem;color:#0a0c10;flex:none}
+.av.l{width:44px;height:44px;font-size:1.1rem}
+.sw{display:flex;gap:8px;flex-wrap:wrap}
+.sw button{width:34px;height:34px;border-radius:50%;border:3px solid transparent}
+.sw button.on{border-color:#fff}
+.chip{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:12px;background:var(--s1);border:1px solid var(--line);animation:in .3s;min-width:0}
+.chip span.n{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-weight:600}
+.chip .x{margin-left:auto;color:var(--mut);padding:4px;border-radius:6px}.chip .x:hover{color:var(--bad)}
+@keyframes in{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+.pgrid{grid-template-columns:repeat(auto-fill,minmax(170px,1fr))}
+.pin-big{font-family:'JetBrains Mono',monospace;font-weight:700;font-size:clamp(3.4rem,15vw,7rem);letter-spacing:.08em;line-height:1;color:var(--tx)}
+.qr{width:148px;height:148px;border-radius:12px;background:#fff;padding:8px}
+/* setup */
+.setup{display:grid;grid-template-columns:1fr 360px;gap:18px;align-items:start}
+.sticky{position:sticky;top:76px}
+.qrow{display:flex;justify-content:space-between;gap:10px;align-items:center;padding:12px 14px;border-radius:12px;background:var(--s2);border:1px solid var(--line);margin-bottom:8px}
+.qrow .x{color:var(--mut);padding:6px;border-radius:8px}.qrow .x:hover{color:var(--bad);background:var(--s3)}
+.pill{display:inline-flex;gap:6px;align-items:center;padding:5px 11px;border-radius:99px;background:var(--s3);font-size:.8rem;font-weight:600}
+/* game */
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.stat{background:var(--s1);border:1px solid var(--line);border-radius:12px;padding:12px 14px}
+.stat small{display:block;font-size:.7rem;font-weight:600;letter-spacing:.07em;text-transform:uppercase;color:var(--mut)}
+.stat b{font-family:'JetBrains Mono',monospace;font-size:1.5rem}
+.bar{height:6px;border-radius:99px;background:var(--s3);overflow:hidden;margin:14px 0}
+.bar>div{height:100%;background:var(--ac);transition:width .4s;border-radius:99px}
+.qcard{padding:34px 24px;text-align:center;font-size:clamp(1.25rem,3.6vw,1.9rem);font-weight:700;line-height:1.3;letter-spacing:-.01em;margin:6px 0 14px}
 .opts{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-@media(max-width:600px){.opts{grid-template-columns:1fr}}
-.opt{padding:22px 16px;border-radius:16px;font-size:1.1rem;font-weight:700;text-align:left;display:flex;gap:12px;align-items:center;transition:.12s;border:2px solid transparent}
-.opt:hover{transform:translateY(-2px);filter:brightness(1.15)}
-.opt i{font-style:normal;font-family:'JetBrains Mono',monospace;background:rgba(0,0,0,.3);border-radius:8px;padding:4px 10px}
-.o0{background:#be123c}.o1{background:#1d4ed8}.o2{background:#b45309}.o3{background:#15803d}
-.opt.ok{border-color:#fff;box-shadow:0 0 30px #4ade80;background:#16a34a}
-.opt.bad{opacity:.35;background:#475569}
-.shake{animation:sh .35s}
-@keyframes sh{25%{transform:translateX(-8px)}75%{transform:translateX(8px)}}
-.bar{height:8px;border-radius:99px;background:#1e293b;overflow:hidden}
-.bar>div{height:100%;background:linear-gradient(90deg,var(--g),var(--b));transition:width .5s}
-.fx{display:flex;gap:8px;flex-wrap:wrap;min-height:30px}
-.tag{font-size:.75rem;font-family:'JetBrains Mono',monospace;padding:5px 10px;border-radius:99px;border:1px solid}
-.t-sh{color:#60a5fa;border-color:#60a5fa}.t-ml{color:var(--y);border-color:var(--y)}.t-st{color:#fb923c;border-color:#fb923c}
-.lb{display:grid;gap:8px}
-.lbrow{display:grid;grid-template-columns:34px 1fr auto;gap:12px;align-items:center;padding:10px 14px;border-radius:14px;background:rgba(30,41,59,.55);border:1px solid var(--line);transition:transform .4s}
-.lbrow.me{border-color:var(--g);background:rgba(74,222,128,.1)}
-.lbrow b.rk{font-family:'JetBrains Mono',monospace;color:var(--y)}
-.modal{position:fixed;inset:0;background:rgba(2,6,23,.88);z-index:50;display:flex;align-items:center;justify-content:center;padding:18px;animation:pop .25s}
-.modal .box{width:100%;max-width:640px;padding:24px;max-height:90vh;overflow:auto}
-.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:12px;margin-top:14px}
-.hcard{padding:18px 14px;border-radius:16px;text-align:left;background:#0f172a;border:1px solid var(--line);transition:.15s}
-.hcard:hover{transform:translateY(-4px) rotate(-1deg);border-color:var(--c);box-shadow:0 0 24px color-mix(in srgb,var(--c) 40%,transparent)}
-.hcard .ic{font-size:2rem}.hcard b{display:block;margin:6px 0 4px;color:var(--c)}.hcard span{font-size:.82rem;color:#94a3b8}
-.frozen{position:fixed;inset:0;z-index:60;background:rgba(14,116,144,.55);backdrop-filter:blur(8px) saturate(.6);display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:2rem;font-weight:700;text-align:center;padding:20px}
-.toast{position:fixed;left:50%;top:70px;transform:translateX(-50%);z-index:70;padding:14px 20px;border-radius:14px;font-weight:700;animation:pop .3s;max-width:92vw;text-align:center}
-.toast.bad{background:#9f1239;border:1px solid #fb7185}.toast.good{background:#14532d;border:1px solid var(--g)}
-.feed{font-family:'JetBrains Mono',monospace;font-size:.82rem;display:grid;gap:6px}
-.feed div{padding:8px 12px;border-left:3px solid var(--g);background:rgba(15,23,42,.7);border-radius:6px;animation:pop .3s}
-.feed .h{border-color:var(--r)}
-.qrow{display:flex;justify-content:space-between;gap:10px;align-items:center;padding:12px 14px;border-radius:12px;background:rgba(30,41,59,.55);border:1px solid var(--line);margin-bottom:8px}
-.qrow .x{background:none;color:#64748b;font-size:1.2rem}.qrow .x:hover{color:var(--r)}
-.podium{display:flex;align-items:flex-end;justify-content:center;gap:12px;margin:30px 0;min-height:260px}
-.pod{width:min(30vw,170px);border-radius:16px 16px 0 0;padding:14px 8px;text-align:center;font-weight:700;animation:rise 1s both}
-.pod .n{font-size:1.1rem;word-break:break-word}.pod .s{font-family:'JetBrains Mono',monospace;color:var(--y);font-size:.9rem}
-.p1{height:240px;background:linear-gradient(#ca8a04,#713f12);animation-delay:.8s}.p2{height:180px;background:linear-gradient(#64748b,#334155);animation-delay:.4s}.p3{height:130px;background:linear-gradient(#b45309,#78350f);animation-delay:0s}
-@keyframes rise{from{transform:translateY(200px);opacity:0}to{transform:none;opacity:1}}
-.timer{font-size:2.2rem;font-weight:700;font-family:'JetBrains Mono',monospace;color:var(--g)}
-.timer.low{color:var(--r);animation:pu 1s infinite}@keyframes pu{50%{opacity:.4}}
-.spin{width:44px;height:44px;border:4px solid var(--g);border-top-color:transparent;border-radius:50%;animation:sp 1s linear infinite;margin:0 auto 14px}@keyframes sp{to{transform:rotate(360deg)}}
-a{color:var(--g)}
-.hint{color:#64748b;font-size:.8rem}
-.fab{position:fixed;right:12px;bottom:12px;z-index:40;display:flex;gap:8px}
-.fab button{width:42px;height:42px;border-radius:12px;background:rgba(15,23,42,.85);border:1px solid var(--line);font-size:1.1rem}
-.av{font-size:1.2rem;margin-right:6px}.avs{display:flex;flex-wrap:wrap;gap:8px;justify-content:center}
-.avs button{font-size:1.6rem;width:48px;height:48px;border-radius:12px;background:#0f172a;border:2px solid transparent}.avs button.sel{border-color:var(--g);background:rgba(74,222,128,.15)}
-.award{padding:14px;border-radius:14px;background:rgba(30,41,59,.6);border:1px solid var(--line);text-align:left}
-.kick{background:none;color:#64748b;margin-left:auto;font-size:1rem}.kick:hover{color:var(--r)}
-.small{padding:8px 12px;font-size:.85rem;border-radius:10px}
+.opt{display:flex;align-items:center;gap:14px;text-align:left;padding:18px;border-radius:14px;background:var(--s1);border:1.5px solid var(--line);font-weight:600;font-size:1.02rem;min-height:68px;transition:.12s}
+.opt:hover{border-color:#3a4260;background:var(--s2)}
+.opt i{font-style:normal;font-family:'JetBrains Mono',monospace;width:32px;height:32px;border-radius:8px;display:grid;place-items:center;font-size:.85rem;flex:none;color:#0a0c10;font-weight:700}
+.o0 i{background:#ff7a8a}.o1 i{background:#7aa2ff}.o2 i{background:#f5b84b}.o3 i{background:#3ddc97}
+.opt.ok{border-color:var(--ac);background:var(--ac-d)}
+.opt.bad{border-color:var(--bad);background:rgba(255,93,108,.1);animation:sh .3s}
+.opt.dim{opacity:.4}
+@keyframes sh{25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+.fx{display:flex;gap:8px;flex-wrap:wrap;min-height:30px;margin:12px 0 0}
+.tag{display:inline-flex;align-items:center;gap:6px;font-size:.78rem;font-weight:600;padding:5px 10px;border-radius:99px;border:1px solid var(--line);color:var(--mut)}
+.tag.sh{color:var(--blue);border-color:rgba(91,140,255,.4)}.tag.ml{color:var(--warn);border-color:rgba(245,184,75,.4)}.tag.ok{color:var(--ac);border-color:rgba(61,220,151,.4)}
+.lb{display:grid;gap:6px}
+.lbrow{display:grid;grid-template-columns:28px 34px 1fr auto;gap:10px;align-items:center;padding:9px 12px;border-radius:12px;background:var(--s2);border:1px solid transparent;width:100%;text-align:left}
+.lbrow.me{border-color:rgba(61,220,151,.5);background:var(--ac-d)}
+.lbrow .rk{font-family:'JetBrains Mono',monospace;color:var(--mut);font-weight:700;font-size:.85rem}
+.lbrow .nm{font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;display:flex;gap:8px;align-items:center}
+.lbrow .sc{font-family:'JetBrains Mono',monospace;font-weight:700}
+button.lbrow:hover{border-color:var(--bad)}
+.timer{font-family:'JetBrains Mono',monospace;font-weight:700;font-size:2.4rem;line-height:1}
+.timer.low{color:var(--bad)}
+.feed{display:grid;gap:6px;font-size:.9rem}
+.feed div{padding:9px 12px;border-radius:10px;background:var(--s2);border-left:3px solid var(--bad);animation:in .3s}
+/* overlays */
+.modal{position:fixed;inset:0;z-index:60;background:rgba(5,7,10,.78);backdrop-filter:blur(6px);display:flex;align-items:center;justify-content:center;padding:16px;animation:fade .2s}
+@keyframes fade{from{opacity:0}to{opacity:1}}
+.box{width:100%;max-width:520px;max-height:92dvh;overflow:auto;background:var(--s1);border:1px solid var(--line);border-radius:18px;padding:24px;animation:in .25s}
+.box.w{max-width:660px}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin-top:16px}
+.hcard{text-align:left;padding:16px;border-radius:14px;background:var(--s2);border:1px solid var(--line);transition:.15s}
+.hcard:hover{border-color:var(--c);transform:translateY(-2px)}
+.hcard .hi{width:40px;height:40px;border-radius:10px;display:grid;place-items:center;color:var(--c);background:color-mix(in srgb,var(--c) 15%,transparent);margin-bottom:10px}
+.hcard b{display:block;margin-bottom:3px}.hcard span{font-size:.82rem;color:var(--mut)}
+.block{position:fixed;inset:0;z-index:55;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;text-align:center;padding:24px;background:rgba(10,12,16,.92);backdrop-filter:blur(10px)}
+.block .big{width:72px;height:72px;border-radius:20px;display:grid;place-items:center;background:var(--s2);border:1px solid var(--line)}
+.block .big svg{width:34px;height:34px}
+.toast{position:fixed;left:50%;top:72px;transform:translateX(-50%);z-index:80;padding:12px 18px;border-radius:12px;font-weight:600;font-size:.95rem;animation:in .25s;max-width:92vw;text-align:center;background:var(--s3);border:1px solid var(--line);box-shadow:0 10px 30px rgba(0,0,0,.4)}
+.toast.good{border-color:rgba(61,220,151,.5)}.toast.bad{border-color:rgba(255,93,108,.5)}
+.spin{width:34px;height:34px;border:3px solid var(--s3);border-top-color:var(--ac);border-radius:50%;animation:sp .8s linear infinite;margin:0 auto}@keyframes sp{to{transform:rotate(360deg)}}
+.podium{display:flex;align-items:flex-end;justify-content:center;gap:10px;margin:26px 0;min-height:240px}
+.pod{width:min(30%,170px);border-radius:14px 14px 0 0;padding:14px 8px;text-align:center;animation:rise .8s both;display:flex;flex-direction:column;align-items:center;gap:6px}
+.pod .n{font-weight:700;word-break:break-word}.pod .s{font-family:'JetBrains Mono',monospace;font-size:.9rem;color:var(--tx)}
+.pod .pl{font-family:'JetBrains Mono',monospace;font-weight:800;font-size:1.5rem}
+.p1{height:230px;background:linear-gradient(#3b3216,#1c180a);border:1px solid rgba(245,184,75,.4);animation-delay:.6s}.p1 .pl{color:var(--warn)}
+.p2{height:180px;background:linear-gradient(#262b38,#161a23);border:1px solid var(--line);animation-delay:.3s}
+.p3{height:140px;background:linear-gradient(#35251a,#1a120c);border:1px solid rgba(205,127,50,.35);animation-delay:0s}
+@keyframes rise{from{transform:translateY(160px);opacity:0}to{transform:none;opacity:1}}
+.award{padding:14px 16px;border-radius:12px;background:var(--s1);border:1px solid var(--line)}
+.tabs{display:flex;gap:4px;background:var(--bg);border:1px solid var(--line);border-radius:12px;padding:3px;margin-bottom:18px}
+.tabs button{flex:1;padding:10px;border-radius:9px;font-weight:600;color:var(--mut)}.tabs button.on{background:var(--s3);color:var(--tx)}
+.divider{display:flex;align-items:center;gap:12px;color:var(--mut);font-size:.8rem;margin:16px 0}
+.divider:before,.divider:after{content:"";flex:1;height:1px;background:var(--line)}
+.gbtn{background:#fff;color:#1f1f1f;border-color:#fff;gap:10px}.gbtn:hover{background:#f1f3f4}
+.gbtn svg{width:20px;height:20px}
+.sbar{display:none}
+/* mobile */
+@media(max-width:860px){
+ .hero{grid-template-columns:1fr;gap:28px;padding:28px 0 18px}
+ .feat{grid-template-columns:1fr}
+ .setup{grid-template-columns:1fr}.sticky{position:static}
+}
+@media(max-width:600px){
+ .wrap{padding:18px 14px 40px}.hin{padding:0 14px}
+ .opts{grid-template-columns:1fr}
+ .opt{min-height:62px;padding:15px}
+ .stats{gap:8px}.stat{padding:10px}.stat b{font-size:1.2rem}
+ .qcard{padding:24px 16px}
+ .box{padding:20px;border-radius:16px}
+ .modal{align-items:flex-end;padding:0}.box{border-bottom-left-radius:0;border-bottom-right-radius:0;max-height:94dvh;padding-bottom:calc(20px + var(--sp))}
+ .pin-in{font-size:1.7rem;letter-spacing:.28em}
+ .hide-m{display:none}
+ .sbar{display:block;position:fixed;left:0;right:0;bottom:0;z-index:25;padding:12px 14px calc(12px + var(--sp));background:rgba(10,12,16,.92);backdrop-filter:blur(12px);border-top:1px solid var(--line)}
+ .has-sbar{padding-bottom:96px}
+}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 </style>
 </head>
 <body>
-<canvas id="matrix"></canvas>
-<div id="root"></div>
-<div class="fab"><button id="mute" title="Geluid aan/uit">🔊</button><button id="fs" title="Volledig scherm">⛶</button></div>
+<header id="hdr"></header>
+<main id="root"></main>
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-import { getFirestore, collection, doc, setDoc, getDoc, updateDoc, onSnapshot, addDoc, runTransaction, query, orderBy, limit, increment }
+import { getFirestore, collection, doc, setDoc, getDoc, getDocs, deleteDoc, updateDoc, onSnapshot, addDoc, runTransaction, query, orderBy, limit, increment }
   from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, createUserWithEmailAndPassword, signInWithPopup, signInWithRedirect, GoogleAuthProvider, signOut, updateProfile, sendPasswordResetEmail }
+  from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
 
 const app = initializeApp({
   apiKey: "AIzaSyCQOaU4CLm60Hs25kDxnrKv-FkJT2nbRBA",
@@ -121,7 +202,7 @@ const app = initializeApp({
   messagingSenderId: "594303603345",
   appId: "1:594303603345:web:0e9bbccd50b1701c7fa530"
 });
-const db = getFirestore(app);
+const db = getFirestore(app), auth = getAuth(app);
 const gref = pin => doc(db, "games", pin);
 const pcol = pin => collection(db, "games", pin, "players");
 const pref = (pin, id) => doc(db, "games", pin, "players", id);
@@ -134,46 +215,69 @@ const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": 
 const shuffle = a => { a = [...a]; for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };
 const fmt = n => Math.round(n).toLocaleString("nl-NL");
 const fmtT = ms => { ms = Math.max(0, ms); const s = Math.ceil(ms / 1000); return Math.floor(s / 60) + ":" + String(s % 60).padStart(2, "0"); };
-const pid = localStorage.pid || (localStorage.pid = "p" + Math.random().toString(36).slice(2, 10) + Date.now().toString(36));
-const COLORS = ["#f43f5e", "#3b82f6", "#f59e0b", "#22c55e", "#a855f7", "#06b6d4", "#ec4899", "#84cc16"];
+const localId = localStorage.pid || (localStorage.pid = "p" + Math.random().toString(36).slice(2, 10) + Date.now().toString(36));
+let user = null;
+let pid = localId;
+const COLORS = ["#ff7a8a", "#7aa2ff", "#f5b84b", "#3ddc97", "#c58bff", "#5fd6e6", "#ff9ed1", "#a3e05a"];
 const LET = ["A", "B", "C", "D"];
+const initial = n => (String(n || "?").trim()[0] || "?").toUpperCase();
+const avatar = (p, big) => `<span class="av${big ? " l" : ""}" style="background:${p.color || "#8a92a6"}">${esc(initial(p.name))}</span>`;
+
+const ICONS = {
+  copy: '<rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>',
+  link: '<path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/>',
+  users: '<path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>',
+  zap: '<path d="M13 2 3 14h9l-1 8 10-12h-9z"/>',
+  shield: '<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>',
+  bug: '<path d="m8 2 1.9 1.9M14.1 3.9 16 2M9 7.1V6a3 3 0 1 1 6 0v1.1"/><path d="M12 20c-3.3 0-6-2.7-6-6v-3a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4v3c0 3.3-2.7 6-6 6"/><path d="M12 20v-9M6.5 9C4.6 8.8 3 7.1 3 5M6 13H2M3 21c0-2.1 1.7-3.9 3.8-4M20.97 5c0 2.1-1.6 3.8-3.5 4M22 13h-4M17.2 17c2.1.1 3.8 1.9 3.8 4"/>',
+  snow: '<path d="M2 12h20M12 2v20M20 16l-4-4 4-4M4 8l4 4-4 4M16 4l-4 4-4-4M8 20l4-4 4 4"/>',
+  swap: '<path d="m17 2 4 4-4 4"/><path d="M3 11v-1a4 4 0 0 1 4-4h14"/><path d="m7 22-4-4 4-4"/><path d="M21 13v1a4 4 0 0 1-4 4H3"/>',
+  moon: '<path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/>',
+  gift: '<rect x="3" y="8" width="18" height="4" rx="1"/><path d="M12 8v13"/><path d="M19 12v7a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2v-7"/><path d="M7.5 8a2.5 2.5 0 0 1 0-5A4.8 8 0 0 1 12 8a4.8 8 0 0 1 4.5-5 2.5 2.5 0 0 1 0 5"/>',
+  steal: '<path d="M12 17V3"/><path d="m6 11 6 6 6-6"/><path d="M19 21H5"/>',
+  user: '<path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>',
+  out: '<path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="m16 17 5-5-5-5"/><path d="M21 12H9"/>',
+  vol: '<path d="M11 5 6 9H2v6h4l5 4V5z"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/>',
+  mute: '<path d="M11 5 6 9H2v6h4l5 4V5z"/><path d="m22 9-6 6M16 9l6 6"/>',
+  full: '<path d="M8 3H5a2 2 0 0 0-2 2v3M21 8V5a2 2 0 0 0-2-2h-3M3 16v3a2 2 0 0 0 2 2h3M16 21h3a2 2 0 0 0 2-2v-3"/>',
+  plus: '<path d="M5 12h14M12 5v14"/>', x: '<path d="M18 6 6 18M6 6l12 12"/>', check: '<path d="M20 6 9 17l-5-5"/>',
+  up: '<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="m17 8-5-5-5 5"/><path d="M12 3v12"/>',
+  down: '<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="m7 10 5 5 5-5"/><path d="M12 15V3"/>',
+  back: '<path d="m12 19-7-7 7-7M19 12H5"/>', play: '<path d="m6 3 14 9-14 9z"/>',
+  save: '<path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><path d="M17 21v-8H7v8M7 3v5h8"/>',
+  help: '<circle cx="12" cy="12" r="10"/><path d="M9.1 9a3 3 0 0 1 5.8 1c0 2-3 3-3 3M12 17h.01"/>',
+  trophy: '<path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6M18 9h1.5a2.5 2.5 0 0 0 0-5H18M4 22h16M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22M18 2H6v7a6 6 0 0 0 12 0V2z"/>',
+  snowflake: ''
+};
+const ic = n => `<svg class="i" viewBox="0 0 24 24" aria-hidden="true">${ICONS[n] || ""}</svg>`;
+const LOGO = `<svg viewBox="0 0 64 64"><rect width="64" height="64" rx="15" fill="#3ddc97"/><path d="M19 46V19l26 27V19" fill="none" stroke="#04140d" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+const GICON = `<svg viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.5 0 6.6 1.2 9.1 3.6l6.8-6.8C35.8 2.4 30.3 0 24 0 14.6 0 6.5 5.4 2.6 13.2l7.9 6.1C12.4 13.6 17.7 9.5 24 9.5z"/><path fill="#4285F4" d="M46.1 24.5c0-1.6-.1-3.1-.4-4.5H24v9h12.4c-.5 2.9-2.2 5.3-4.6 6.9l7.1 5.5c4.3-4 6.8-9.9 6.8-16.9z"/><path fill="#FBBC05" d="M10.5 28.7a14.5 14.5 0 0 1 0-9.4l-7.9-6.1a24 24 0 0 0 0 21.6l7.9-6.1z"/><path fill="#34A853" d="M24 48c6.5 0 11.9-2.1 15.9-5.8l-7.1-5.5c-2 1.4-4.9 2.3-8.8 2.3-6.3 0-11.6-4.1-13.5-9.8l-7.9 6.1C6.5 42.6 14.6 48 24 48z"/></svg>`;
 
 let muted = localStorage.muted === "1";
-const AVATARS = ["🦊","🐱","🐼","🐸","🦄","🐙","🦁","🐵","🤖","👾","👻","🐲","🦉","🐺","🧠","🔥"];
-const mapP = s => s.docs.map(d => ({ id: d.id, ...d.data() })).filter(p => !p.kicked);
-let ac; function beep(f = 600, d = .12, type = "sine", v = .06) {
+let ac; function beep(f = 600, d = .12, type = "sine", v = .05) {
   if (muted) return;
   try { ac = ac || new (window.AudioContext || window.webkitAudioContext)(); const o = ac.createOscillator(), g = ac.createGain();
     o.type = type; o.frequency.value = f; g.gain.value = v; g.gain.exponentialRampToValueAtTime(.0001, ac.currentTime + d);
     o.connect(g); g.connect(ac.destination); o.start(); o.stop(ac.currentTime + d); } catch {} }
-const sfx = { ok: () => { beep(660, .1); setTimeout(() => beep(990, .15), 90); }, bad: () => beep(140, .3, "sawtooth"), hack: () => { beep(300, .08, "square"); setTimeout(() => beep(500, .08, "square"), 80); setTimeout(() => beep(900, .15, "square"), 160); }, hit: () => { beep(110, .4, "sawtooth", .1); } };
+const sfx = { ok: () => { beep(660, .1); setTimeout(() => beep(990, .14), 90); }, bad: () => beep(150, .25, "sawtooth"), hack: () => { beep(320, .08, "square"); setTimeout(() => beep(520, .08, "square"), 80); setTimeout(() => beep(880, .14, "square"), 160); }, hit: () => beep(110, .35, "sawtooth", .08) };
 
 function toast(msg, kind = "good", ms = 2600) {
-  const t = document.createElement("div"); t.className = "toast " + kind; t.textContent = msg; document.body.appendChild(t);
-  setTimeout(() => t.remove(), ms);
+  const t = document.createElement("div"); t.className = "toast " + kind; t.textContent = msg; document.body.appendChild(t); setTimeout(() => t.remove(), ms);
+}
+function copy(text, label) {
+  const done = () => toast(label || "Gekopieerd", "good", 1600);
+  const fb = () => { const t = document.createElement("textarea"); t.value = text; t.style.position = "fixed"; t.style.opacity = 0; document.body.appendChild(t); t.select(); try { document.execCommand("copy"); done(); } catch { toast("Kopieer handmatig: " + text, "bad", 4000); } t.remove(); };
+  if (navigator.clipboard && window.isSecureContext) navigator.clipboard.writeText(text).then(done, fb); else fb();
 }
 
-/* matrix rain */
-$("#mute").onclick = () => { muted = !muted; localStorage.muted = muted ? "1" : "0"; $("#mute").textContent = muted ? "🔇" : "🔊"; };
-$("#mute").textContent = muted ? "🔇" : "🔊";
-$("#fs").onclick = () => document.fullscreenElement ? document.exitFullscreen() : document.documentElement.requestFullscreen().catch(() => {});
-/* matrix rain */
-(() => {
-  const c = $("#matrix"), x = c.getContext("2d"); let cols, drops;
-  const init = () => { c.width = innerWidth; c.height = innerHeight; cols = Math.floor(c.width / 16); drops = Array(cols).fill(0).map(() => Math.random() * -50); };
-  init(); addEventListener("resize", init);
-  setInterval(() => { x.fillStyle = "rgba(2,6,23,.12)"; x.fillRect(0, 0, c.width, c.height); x.fillStyle = "#4ade80"; x.font = "14px monospace";
-    drops.forEach((y, i) => { x.fillText(Math.random() < .5 ? "0" : "1", i * 16, y * 16); drops[i] = y * 16 > c.height && Math.random() > .97 ? 0 : y + 1; }); }, 70);
-})();
-
-/* ---------- presets ---------- */
+/* ---------- content ---------- */
 const PRESETS = {
-  "Cyber & ICT": [
+  "Cyber en ICT": [
     { q: "Waar staat HTML voor?", a: "HyperText Markup Language", options: ["High Tech Modern Language", "HyperTool Multi Link", "Home Text Make-up Language"] },
     { q: "Wat is phishing?", a: "Valse berichten om gegevens te stelen", options: ["Een soort virusscanner", "Een snelle wifi-verbinding", "Een back-up maken"] },
     { q: "Welk getal is 1010 in binair, in decimaal?", a: "10", options: ["8", "12", "5"] },
     { q: "Waar gebruik je een firewall voor?", a: "Ongewenst netwerkverkeer blokkeren", options: ["Je scherm helderder maken", "Bestanden comprimeren", "Je computer koelen"] },
-    { q: "Wat doet een sterk wachtwoord?", a: "Lang, uniek en met verschillende tekens", options: ["Je naam + 123", "Altijd hetzelfde overal", "Alleen kleine letters"] },
+    { q: "Wat maakt een wachtwoord sterk?", a: "Lang, uniek en met verschillende tekens", options: ["Je naam + 123", "Overal hetzelfde gebruiken", "Alleen kleine letters"] },
     { q: "Wat is 2FA?", a: "Inloggen met een tweede bewijs", options: ["Twee wachtwoorden onthouden", "Twee accounts aanmaken", "Een snellere internetlijn"] },
     { q: "Welke taal geeft een website zijn opmaak?", a: "CSS", options: ["SQL", "Python", "Bash"] },
     { q: "Wat is een IP-adres?", a: "Het adres van een apparaat op een netwerk", options: ["Een soort wachtwoord", "De naam van je wifi", "Een type virus"] },
@@ -192,248 +296,346 @@ const PRESETS = {
   ]
 };
 
-/* ---------- hacks ---------- */
 const HACKS = {
-  steal:     { ic: "💸", n: "Data Steal",  d: "Pak 15% van de credits van een speler.", c: "#f59e0b", t: true },
-  virus:     { ic: "☣️", n: "Virus",       d: "Doelwit verliest 150 credits.",          c: "#f43f5e", t: true },
-  freeze:    { ic: "🧊", n: "Freeze",      d: "Doelwit zit 6 seconden vast.",           c: "#22d3ee", t: true },
-  overclock: { ic: "⚡", n: "Overclock",   d: "Dubbele credits voor 20 seconden.",      c: "#a855f7", t: false },
-  firewall:  { ic: "🛡️", n: "Firewall",    d: "Blokkeert de volgende hack op jou.",     c: "#60a5fa", t: false },
-  swap:      { ic: "🔀", n: "Swap",        d: "Wissel je credits met een speler (alleen als jij minder hebt).", c: "#ec4899", t: true },
-  blackout:  { ic: "🌑", n: "Blackout",    d: "Alle anderen zien 5 seconden niets.",    c: "#94a3b8", t: false },
-  jackpot:   { ic: "🎰", n: "Jackpot",     d: "Direct +250 credits.",                   c: "#4ade80", t: false }
+  steal:     { ic: "steal",  n: "Data Steal", d: "Pak 15% van de credits van een speler.", c: "#f5b84b", t: true },
+  virus:     { ic: "bug",    n: "Virus",      d: "Doelwit verliest 150 credits.", c: "#ff5d6c", t: true },
+  freeze:    { ic: "snow",   n: "Freeze",     d: "Doelwit zit 6 seconden vast.", c: "#5fd6e6", t: true },
+  swap:      { ic: "swap",   n: "Swap",       d: "Wissel credits met een speler die meer heeft.", c: "#ff9ed1", t: true },
+  overclock: { ic: "zap",    n: "Overclock",  d: "Dubbele credits voor 20 seconden.", c: "#c58bff", t: false },
+  firewall:  { ic: "shield", n: "Firewall",   d: "Blokkeert de volgende hack op jou.", c: "#7aa2ff", t: false },
+  blackout:  { ic: "moon",   n: "Blackout",   d: "Alle anderen zien 5 seconden niets.", c: "#8a92a6", t: false },
+  jackpot:   { ic: "gift",   n: "Jackpot",    d: "Direct +250 credits.", c: "#3ddc97", t: false }
 };
 const HKEYS = Object.keys(HACKS);
 
-/* ---------- state ---------- */
-let S = { role: null, pin: null, game: null, players: [], events: [], view: null, unsubs: [] };
+/* ---------- state + header ---------- */
+let S = { role: null, pin: null, game: null, players: [], view: null, unsubs: [] };
 function cleanup() { S.unsubs.forEach(u => u()); S.unsubs = []; clearInterval(S.tick); }
-function go(view, html) { S.view = view; root.innerHTML = html; window.scrollTo(0, 0); }
+function go(view, html) { S.view = view; root.innerHTML = html; window.scrollTo(0, 0); header(); }
+const dname = () => (user && (user.displayName || (user.email || "").split("@")[0])) || "";
 
-/* ---------- HOME ---------- */
-function copy(text, label) {
-  const done = () => toast((label || "Gekopieerd") + " ✓", "good", 1500);
-  if (navigator.clipboard && window.isSecureContext) navigator.clipboard.writeText(text).then(done, () => fallback());
-  else fallback();
-  function fallback() { const t = document.createElement("textarea"); t.value = text; document.body.appendChild(t); t.select(); try { document.execCommand("copy"); done(); } catch { toast("Kopieer handmatig: " + text, "bad", 4000); } t.remove(); }
+function header() {
+  const inGame = !!S.role;
+  $("#hdr").innerHTML = `<div class="hin"><a class="brand" href="/" id="logo" aria-label="Naimit start">${LOGO}<span>Naimit</span></a>
+    <div class="hr">
+      <button class="ib" id="mute" title="Geluid">${ic(muted ? "mute" : "vol")}</button>
+      <button class="ib hide-m" id="fs" title="Volledig scherm">${ic("full")}</button>
+      ${inGame ? "" : user ? `<button class="btn s" id="acct">${avatar({ name: dname(), color: COLORS[1] })}<span class="hide-m">${esc(dname())}</span></button>` : `<button class="btn s pri" id="login">Inloggen</button>`}
+    </div></div>`;
+  $("#logo").onclick = e => { e.preventDefault(); if (S.role && !confirm("Spel verlaten?")) return; if (S.role === "player") localStorage.removeItem("active"); Home(""); };
+  $("#mute").onclick = () => { muted = !muted; localStorage.muted = muted ? "1" : "0"; header(); };
+  $("#fs").onclick = () => document.fullscreenElement ? document.exitFullscreen() : document.documentElement.requestFullscreen().catch(() => {});
+  if ($("#login")) $("#login").onclick = () => AuthModal("login");
+  if ($("#acct")) $("#acct").onclick = AccountModal;
 }
 
+function modal(html, wide) {
+  const m = document.createElement("div"); m.className = "modal"; m.innerHTML = `<div class="box${wide ? " w" : ""}" role="dialog">${html}</div>`;
+  m.addEventListener("mousedown", e => { if (e.target === m) m.remove(); });
+  document.body.appendChild(m); return m;
+}
+
+/* ---------- auth ---------- */
+const DOMAIN = "@users.naimit.app";
+const toEmail = id => id.includes("@") ? id.trim() : id.trim().toLowerCase() + DOMAIN;
+const AERR = {
+  "auth/invalid-credential": "Onjuiste gebruikersnaam of wachtwoord.", "auth/user-not-found": "Dit account bestaat niet.", "auth/wrong-password": "Onjuist wachtwoord.",
+  "auth/email-already-in-use": "Deze gebruikersnaam of dit e-mailadres is al in gebruik.", "auth/weak-password": "Kies een wachtwoord van minstens 6 tekens.",
+  "auth/invalid-email": "Dit e-mailadres is ongeldig.", "auth/too-many-requests": "Te veel pogingen. Probeer het later opnieuw.", "auth/network-request-failed": "Geen verbinding.",
+  "auth/popup-closed-by-user": "", "auth/cancelled-popup-request": ""
+};
+onAuthStateChanged(auth, u => { user = u; if (!S.role) pid = u ? u.uid : localId; header(); });
+
+function AuthModal(mode = "login") {
+  const m = modal(`<div class="row between"><h2 style="font-size:1.3rem">${mode === "login" ? "Inloggen" : "Account maken"}</h2><button class="ib" id="cl">${ic("x")}</button></div>
+    <p class="mut sm" style="margin:6px 0 18px">Inloggen is optioneel. Met een account bewaar je je statistieken en quizsets.</p>
+    <div class="tabs"><button data-m="login" class="${mode === "login" ? "on" : ""}">Inloggen</button><button data-m="register" class="${mode === "register" ? "on" : ""}">Account maken</button></div>
+    <button class="btn blk gbtn" id="g">${GICON}Doorgaan met Google</button>
+    <div class="divider">of met gebruikersnaam of e-mail</div>
+    <div class="grid" style="gap:12px">
+      <div><label class="lbl" for="u">Gebruikersnaam of e-mail</label><input id="u" autocomplete="username" autocapitalize="none" spellcheck="false"></div>
+      <div><label class="lbl" for="p">Wachtwoord</label><input id="p" type="password" autocomplete="${mode === "login" ? "current-password" : "new-password"}"></div>
+      <button class="btn pri blk lg" id="go">${mode === "login" ? "Inloggen" : "Account maken"}</button>
+      <div class="err" id="er"></div>
+      ${mode === "login" ? `<button class="btn ghost s" id="fg" style="justify-self:center">Wachtwoord vergeten?</button>` : `<p class="xs mut">Gebruikersnaam: 3 tot 20 tekens (letters, cijfers, _). Een wachtwoord herstellen kan alleen met een e-mailadres.</p>`}
+    </div>`);
+  const er = t => m.querySelector("#er").textContent = t || "";
+  m.querySelector("#cl").onclick = () => m.remove();
+  m.querySelectorAll(".tabs button").forEach(b => b.onclick = () => { m.remove(); AuthModal(b.dataset.m); });
+  const fail = e => { er(AERR[e.code] ?? ("Er ging iets mis: " + (e.code || e.message))); m.querySelector("#go").disabled = false; };
+  m.querySelector("#g").onclick = async () => {
+    try { await signInWithPopup(auth, new GoogleAuthProvider()); m.remove(); toast("Ingelogd"); }
+    catch (e) { if (e.code === "auth/popup-blocked" || e.code === "auth/operation-not-supported-in-this-environment") signInWithRedirect(auth, new GoogleAuthProvider()); else fail(e); }
+  };
+  const submit = async () => {
+    const id = m.querySelector("#u").value.trim(), pw = m.querySelector("#p").value;
+    if (!id || !pw) return er("Vul beide velden in.");
+    if (!id.includes("@") && !/^[a-zA-Z0-9_]{3,20}$/.test(id)) return er("Gebruikersnaam: 3 tot 20 tekens, alleen letters, cijfers en _.");
+    m.querySelector("#go").disabled = true; er("");
+    try {
+      if (mode === "login") await signInWithEmailAndPassword(auth, toEmail(id), pw);
+      else { const c = await createUserWithEmailAndPassword(auth, toEmail(id), pw); await updateProfile(c.user, { displayName: id.includes("@") ? id.split("@")[0] : id }); user = auth.currentUser; }
+      m.remove(); header(); toast(mode === "login" ? "Ingelogd" : "Account aangemaakt");
+    } catch (e) { fail(e); }
+  };
+  m.querySelector("#go").onclick = submit; m.querySelector("#p").onkeydown = e => e.key === "Enter" && submit();
+  if (m.querySelector("#fg")) m.querySelector("#fg").onclick = async () => {
+    const id = m.querySelector("#u").value.trim(); if (!id.includes("@")) return er("Vul je e-mailadres in om je wachtwoord te herstellen.");
+    try { await sendPasswordResetEmail(auth, id); er(""); toast("Herstelmail verstuurd", "good", 3500); } catch (e) { fail(e); }
+  };
+  m.querySelector("#u").focus();
+}
+
+async function AccountModal() {
+  const m = modal(`<div class="row between"><h2 style="font-size:1.3rem">Mijn account</h2><button class="ib" id="cl">${ic("x")}</button></div>
+    <div class="row mt">${avatar({ name: dname(), color: COLORS[1] }, true)}<div style="min-width:0"><b id="dn">${esc(dname())}</b><div class="mut sm" style="overflow:hidden;text-overflow:ellipsis">${esc(user.email && !user.email.endsWith(DOMAIN) ? user.email : "Account met gebruikersnaam")}</div></div></div>
+    <div class="stats mt" id="st"><div class="stat"><small>Spellen</small><b>-</b></div><div class="stat"><small>Winsten</small><b>-</b></div><div class="stat"><small>Beste streak</small><b>-</b></div></div>
+    <div class="mt"><label class="lbl" for="nn">Weergavenaam</label><div class="row" style="flex-wrap:nowrap"><input id="nn" maxlength="14" value="${esc(dname())}"><button class="btn" id="sv">Opslaan</button></div></div>
+    <button class="btn blk dng mt2" id="lo">${ic("out")} Uitloggen</button>`);
+  m.querySelector("#cl").onclick = () => m.remove();
+  m.querySelector("#sv").onclick = async () => { const n = m.querySelector("#nn").value.trim(); if (!n) return; await updateProfile(auth.currentUser, { displayName: n }); user = auth.currentUser; localStorage.pname = n; header(); m.querySelector("#dn").textContent = n; toast("Naam opgeslagen"); };
+  m.querySelector("#lo").onclick = async () => { await signOut(auth); m.remove(); toast("Uitgelogd"); if (S.view === "home" || S.view === "setup") Home(""); };
+  try {
+    const s = await getDoc(doc(db, "users", user.uid)); const d = s.exists() ? s.data() : {};
+    const acc = (d.correct || 0) + (d.wrong || 0) ? Math.round((d.correct || 0) / ((d.correct || 0) + (d.wrong || 0)) * 100) + "%" : "-";
+    m.querySelector("#st").innerHTML = `<div class="stat"><small>Spellen</small><b>${d.games || 0}</b></div><div class="stat"><small>Winsten</small><b>${d.wins || 0}</b></div><div class="stat"><small>Nauwkeurigheid</small><b>${acc}</b></div>`;
+  } catch {}
+}
+
+/* ---------- HOME ---------- */
 function Home(prefill) {
-  cleanup(); S = { role: null, pin: null, game: null, players: [], events: [], view: "home", unsubs: [] };
+  cleanup(); S = { role: null, pin: null, game: null, players: [], view: "home", unsubs: [] };
   const qpin = (typeof prefill === "string" ? prefill : new URLSearchParams(location.search).get("pin") || "").replace(/\D/g, "").slice(0, 6);
-  if (qpin.length === 6) return checkPin(qpin, true);
-  go("home", `<div class="center">
-    <h1 class="logo">NAIMIT</h1><div class="sub mono">CYBER BATTLEGROUND</div>
-    <div class="stack glass neon" style="padding:22px">
-      <div><div class="lbl">Stap 1 · Voer de game PIN in</div><input id="pin" class="pin-in" inputmode="numeric" autocomplete="off" maxlength="6" placeholder="000000" autofocus></div>
-      <button class="btn go big" id="next" disabled>VERDER →</button>
-      <div class="err" id="err"></div>
-    </div>
-    <div class="stack" style="margin-top:14px"><button class="btn go" id="resume" hidden></button><button class="btn" id="host">Zelf een spel hosten</button><button class="btn" id="how" style="background:none;border-style:dashed">Hoe werkt het?</button></div>
-    <div class="mono hint" style="margin-top:34px">NAIMIT · QUIZ + HACKS · GEEN ACCOUNT NODIG</div>
-  </div>`);
-  const pin = $("#pin");
-  pin.focus();
-  pin.oninput = () => { pin.value = pin.value.replace(/\D/g, ""); $("#next").disabled = pin.value.length !== 6; $("#err").textContent = ""; if (pin.value.length === 6) go2(); };
-  const go2 = () => pin.value.length === 6 && checkPin(pin.value);
-  $("#next").onclick = go2;
-  pin.onkeydown = e => e.key === "Enter" && go2();
-  $("#host").onclick = HostSetup;
-  $("#how").onclick = HowTo;
+  if (qpin.length === 6) return checkPin(qpin);
+  go("home", `<div class="wrap">
+    <section class="hero">
+      <div>
+        <span class="pill mono" style="color:var(--ac)">${ic("zap")} Multiplayer quiz</span>
+        <h1 style="margin-top:16px">Beantwoord. <em>Hack.</em> Win.</h1>
+        <p class="lead">Naimit is een quizspel voor de klas, een groepsapp of een avondje met vrienden. Beantwoord vragen, verdien credits en gebruik hacks om je tegenstanders voor te blijven.</p>
+        <div class="row mt2 hide-m"><button class="btn lg" id="host">${ic("play")} Een spel hosten</button><button class="btn lg ghost" id="how">${ic("help")} Hoe werkt het?</button></div>
+      </div>
+      <div class="card hl">
+        <label class="lbl" for="pin">Meedoen met een spel</label>
+        <input id="pin" class="pin-in" inputmode="numeric" pattern="[0-9]*" autocomplete="off" maxlength="6" placeholder="PIN" aria-label="Game PIN">
+        <button class="btn pri blk lg mt" id="next" disabled>Verder</button>
+        <div class="err" id="err"></div>
+        <button class="btn blk mt" id="resume" hidden></button>
+      </div>
+    </section>
+    <div class="row mt" id="mob" style="display:none"><button class="btn lg blk" id="host2">${ic("play")} Een spel hosten</button><button class="btn lg blk ghost" id="how2">${ic("help")} Hoe werkt het?</button></div>
+    <section class="feat">
+      <div class="card"><div class="ic">${ic("users")}</div><h3>Zonder account spelen</h3><p>Open de link, vul de PIN in en je zit erin. Inloggen met Google of een gebruikersnaam is optioneel.</p></div>
+      <div class="card"><div class="ic">${ic("zap")}</div><h3>Acht verschillende hacks</h3><p>Steel credits, bevries rivalen, wissel van plek of laat het scherm van iedereen zwart worden.</p></div>
+      <div class="card"><div class="ic">${ic("trophy")}</div><h3>Eigen vragen en awards</h3><p>Maak je eigen quiz, importeer JSON of plak vragen in bulk. Aan het eind volgen een podium en awards.</p></div>
+    </section></div>
+    <footer class="f">Naimit - een project van NCS</footer>`);
+  if (innerWidth < 860) { $("#mob").style.display = "grid"; $("#mob").style.gap = "10px"; }
+  const pin = $("#pin"); if (innerWidth > 860) pin.focus();
+  const nx = () => pin.value.length === 6 && checkPin(pin.value);
+  pin.oninput = () => { pin.value = pin.value.replace(/\D/g, ""); $("#next").disabled = pin.value.length !== 6; $("#err").textContent = ""; if (pin.value.length === 6) nx(); };
+  $("#next").onclick = nx; pin.onkeydown = e => e.key === "Enter" && nx();
+  for (const id of ["host", "host2"]) $("#" + id) && ($("#" + id).onclick = HostSetup);
+  for (const id of ["how", "how2"]) $("#" + id) && ($("#" + id).onclick = HowTo);
   try {
     const a = JSON.parse(localStorage.active || "null");
     if (a) getDoc(gref(a.pin)).then(s => {
-      if (!s.exists() || s.data().status === "ended") { localStorage.removeItem("active"); return; }
-      const b = $("#resume"); if (!b) return; b.hidden = false; b.textContent = "↩ Terug naar spel " + a.pin + (a.role === "host" ? " (host)" : "");
+      if (!s.exists() || s.data().status === "ended") return localStorage.removeItem("active");
+      const b = $("#resume"); if (!b) return; b.hidden = false; b.innerHTML = `${ic("back")} Terug naar spel ${a.pin}${a.role === "host" ? " (host)" : ""}`;
       b.onclick = () => a.role === "host" ? (s.data().status === "lobby" ? HostLobby(a.pin) : HostGame(a.pin)) : Player(a.pin);
     }).catch(() => {});
   } catch {}
 }
 
 function HowTo() {
-  const m = document.createElement("div"); m.className = "modal";
-  m.innerHTML = `<div class="box glass neon"><h2 style="margin-top:0">Zo werkt Naimit</h2>
-   <div class="feed" style="font-family:inherit;font-size:1rem;gap:10px">
-    <div><b>1. Host</b> kiest vragen en start een spel. Je krijgt een PIN, link en QR-code.</div>
-    <div><b>2. Spelers</b> vullen de PIN in en kiezen een hackernaam.</div>
-    <div><b>3. Beantwoord vragen</b> in je eigen tempo. Snel en achter elkaar goed = meer credits.</div>
-    <div><b>4. Elke 3 goede antwoorden</b> kies je een hack: pak credits af, bevries, swap of blokkeer anderen.</div>
-    <div><b>5. Wie na de tijd de meeste credits heeft</b> wint. Gebruik een Firewall om jezelf te beschermen!</div></div>
-   <button class="btn go" style="margin-top:18px;width:100%" id="ok">Snap ik, laten we gaan</button></div>`;
-  document.body.appendChild(m); m.querySelector("#ok").onclick = () => m.remove();
+  const m = modal(`<div class="row between"><h2 style="font-size:1.3rem">Zo werkt Naimit</h2><button class="ib" id="cl">${ic("x")}</button></div>
+   <div class="grid mt" style="gap:12px">
+    ${[["Host maakt een spel", "Kies of maak vragen en start. Je krijgt een PIN, link en QR-code om te delen."], ["Spelers doen mee", "Vul de PIN in, kies een naam en kleur. Een account is niet nodig."], ["Beantwoord vragen", "Je speelt in je eigen tempo. Snel en achter elkaar goed levert extra credits op."], ["Gebruik hacks", "Na een aantal goede antwoorden kies je een hack: steel, bevries, wissel of blokkeer."], ["Wie de meeste credits heeft wint", "Als de tijd om is, volgen het podium en de awards."]].map((s, i) => `<div class="row" style="flex-wrap:nowrap;align-items:flex-start"><span class="pill mono" style="min-width:28px;justify-content:center">${i + 1}</span><div><b>${s[0]}</b><div class="mut sm">${s[1]}</div></div></div>`).join("")}
+   </div><button class="btn pri blk lg mt2" id="ok">Duidelijk</button>`);
+  m.querySelector("#cl").onclick = m.querySelector("#ok").onclick = () => m.remove();
 }
 
-async function checkPin(pin, fromLink) {
-  const showErr = msg => { if (S.view === "home" && $("#err")) { $("#err").textContent = msg; $("#pin").select(); } else { history.replaceState(null, "", location.pathname); Home(""); setTimeout(() => $("#err") && ($("#err").textContent = msg), 50); } };
+async function checkPin(pin) {
+  const showErr = msg => { if (S.view === "home" && $("#err")) { $("#err").textContent = msg; $("#pin").select(); } else { history.replaceState(null, "", location.pathname); Home(""); setTimeout(() => $("#err") && ($("#err").textContent = msg), 60); } };
   if (S.view === "home" && $("#err")) $("#err").textContent = "Zoeken...";
   try {
     const s = await getDoc(gref(pin));
-    if (!s.exists()) return showErr("Geen spel gevonden met PIN " + pin + ". Check de cijfers.");
+    if (!s.exists()) return showErr("Geen spel gevonden met PIN " + pin + ".");
     if (s.data().status === "ended") return showErr("Dit spel is al afgelopen.");
     NameStep(pin);
-  } catch (e) { showErr("Geen verbinding: " + e.message); }
+  } catch (e) { showErr("Geen verbinding. Probeer het opnieuw."); }
 }
 
 function NameStep(pin) {
-  go("name", `<div class="center">
-    <h1 class="logo" style="font-size:clamp(2.4rem,9vw,4rem)">NAIMIT</h1><div class="sub mono">SPEL ${esc(pin)} GEVONDEN ✓</div>
-    <div class="stack glass neon" style="padding:22px">
-      <div><div class="lbl">Stap 2 · Kies je hackernaam</div><input id="name" maxlength="14" autocomplete="off" placeholder="bv. Ghost" value="${esc(localStorage.pname || "")}"></div>
-      <div><div class="lbl">Kies je avatar</div><div class="avs" id="avs">${AVATARS.map(a => `<button data-a="${a}">${a}</button>`).join("")}</div></div>
-      <button class="btn go big" id="join">START MET SPELEN</button>
-      <div class="err" id="err"></div>
-    </div>
-    <div class="stack" style="margin-top:14px"><button class="btn" id="back">← Andere PIN</button></div></div>`);
-  let avatar = localStorage.pav || AVATARS[Math.floor(Math.random() * AVATARS.length)];
-  const markAv = () => document.querySelectorAll("#avs button").forEach(b => b.classList.toggle("sel", b.dataset.a === avatar));
-  document.querySelectorAll("#avs button").forEach(b => b.onclick = () => { avatar = b.dataset.a; localStorage.pav = avatar; markAv(); }); markAv();
+  let color = localStorage.pcol || COLORS[Math.floor(Math.random() * COLORS.length)];
+  go("name", `<div class="wrap narrow" style="padding-top:40px"><div class="card hl">
+    <div class="row between"><span class="pill mono">Spel ${esc(pin)}</span><button class="btn s ghost" id="back">${ic("back")} Andere PIN</button></div>
+    <h2 style="font-size:1.6rem;margin:18px 0 4px;letter-spacing:-.02em">Kies je naam</h2>
+    <p class="mut sm">Zo zien de andere spelers je. ${user ? "" : 'Wil je je statistieken bewaren? <a href="#" id="lg">Log in</a>.'}</p>
+    <label class="lbl mt2" for="name">Naam</label><input id="name" maxlength="14" autocomplete="nickname" placeholder="bv. Ghost" value="${esc(dname() || localStorage.pname || "")}">
+    <label class="lbl mt">Kleur</label><div class="sw" id="sw">${COLORS.map(c => `<button data-c="${c}" style="background:${c}" aria-label="kleur"></button>`).join("")}</div>
+    <button class="btn pri blk lg mt2" id="join">Meedoen</button><div class="err" id="err"></div></div></div>`);
+  const mark = () => document.querySelectorAll("#sw button").forEach(b => b.classList.toggle("on", b.dataset.c === color)); mark();
+  document.querySelectorAll("#sw button").forEach(b => b.onclick = () => { color = b.dataset.c; localStorage.pcol = color; mark(); });
+  if ($("#lg")) $("#lg").onclick = e => { e.preventDefault(); AuthModal("login"); };
   const name = $("#name"); name.focus(); name.select();
   $("#back").onclick = () => { history.replaceState(null, "", location.pathname); Home(""); };
   const join = async () => {
     const n = name.value.trim(); const err = m => $("#err").textContent = m;
     if (!n) return err("Typ eerst een naam.");
-    $("#join").disabled = true; err("Verbinden...");
+    $("#join").disabled = true; err("");
     try {
       const s = await getDoc(gref(pin));
       if (!s.exists() || s.data().status === "ended") { $("#join").disabled = false; return err("Dit spel is niet meer beschikbaar."); }
-      localStorage.pname = n;
+      localStorage.pname = n; pid = user ? user.uid : localId;
       const old = await getDoc(pref(pin, pid));
-      const me = old.exists() ? { name: n, avatar, kicked: false } : { name: n, avatar, hacks: 0, best: 0, score: 0, streak: 0, correct: 0, wrong: 0, shield: false, frozenUntil: 0, multUntil: 0, color: COLORS[Math.floor(Math.random() * COLORS.length)], lastHit: null, joinedAt: Date.now() };
+      const me = old.exists() ? { name: n, color, kicked: false } : { name: n, color, hacks: 0, best: 0, score: 0, streak: 0, correct: 0, wrong: 0, shield: false, frozenUntil: 0, multUntil: 0, lastHit: null, joinedAt: Date.now() };
       await setDoc(pref(pin, pid), me, { merge: true });
       history.replaceState(null, "", location.pathname);
       localStorage.active = JSON.stringify({ role: "player", pin });
       Player(pin);
-    } catch (e) { $("#join").disabled = false; err("Fout: " + e.message); }
+    } catch (e) { $("#join").disabled = false; err("Meedoen is mislukt. Probeer het opnieuw."); }
   };
   $("#join").onclick = join; name.onkeydown = e => e.key === "Enter" && join();
 }
+
 /* ---------- HOST ---------- */
-let setup = { qs: structuredClone(PRESETS["Cyber & ICT"]), minutes: 5, hacks: true, every: 3 };
-const savedSets = () => { try { return JSON.parse(localStorage.sets || "{}"); } catch { return {}; } };
-function HostSetup() {
-  cleanup();
+let setup = { qs: structuredClone(PRESETS["Cyber en ICT"]), minutes: 5, hacks: true, every: 3, sets: [] };
+const localSets = () => { try { return JSON.parse(localStorage.sets || "{}"); } catch { return {}; } };
+async function refreshSets() {
+  try {
+    if (user) { const s = await getDocs(collection(db, "users", user.uid, "sets")); setup.sets = s.docs.map(d => ({ id: d.id, ...d.data() })); }
+    else setup.sets = Object.entries(localSets()).map(([n, qs]) => ({ id: n, name: n, qs, local: true }));
+  } catch { setup.sets = []; }
+}
+async function HostSetup() {
+  cleanup(); S = { role: null, pin: null, game: null, players: [], view: "setup", unsubs: [] };
+  await refreshSets();
   const draw = () => {
-    go("setup", `<div class="wrap">
-      <div class="row" style="justify-content:space-between;margin-bottom:22px">
-        <div><div class="lbl mono" style="color:var(--g)">SERVER.HOST</div><h2 style="margin:0;font-size:2.2rem">Maak je <span style="color:var(--g)">spel</span></h2></div>
-        <div class="row"><button class="btn" id="back">← Terug</button><button class="btn go" id="launch" ${setup.qs.length ? "" : "disabled"}>LAUNCH</button></div>
-      </div>
-      <div class="grid" style="grid-template-columns:repeat(auto-fit,minmax(300px,1fr))">
-        <div class="glass" style="padding:20px">
-          <div class="lbl">Instellingen</div>
-          <div class="row" style="margin-bottom:12px">${[3, 5, 8, 12].map(m => `<button class="btn ${setup.minutes === m ? "go" : ""}" data-m="${m}">${m} min</button>`).join("")}</div>
-          <div class="lbl">Hack na elke ... goede antwoorden</div>
-          <div class="row" style="margin-bottom:12px">${[2, 3, 5].map(n => `<button class="btn ${setup.every === n ? "go" : ""}" data-e="${n}">${n}</button>`).join("")}</div>
-          <label class="row" style="margin-bottom:18px"><input type="checkbox" id="hk" ${setup.hacks ? "checked" : ""} style="width:auto"> Hacks aan (steal, virus, freeze...)</label>
-          <div class="lbl">Voorbeeld-sets</div>
-          <div class="row" style="margin-bottom:18px">${Object.keys(PRESETS).map(k => `<button class="btn" data-p="${esc(k)}">${esc(k)}</button>`).join("")}</div>
-          ${Object.keys(savedSets()).length ? `<div class="lbl">Jouw opgeslagen sets</div><div class="row" style="margin-bottom:18px">${Object.keys(savedSets()).map(k => `<button class="btn small" data-s="${esc(k)}">📁 ${esc(k)}</button><button class="btn small red" data-sd="${esc(k)}">✕</button>`).join("")}</div>` : ""}
-          <div class="lbl">Snel vragen plakken</div>
-          <textarea id="bulk" rows="4" placeholder="Eén per regel:&#10;Vraag | Juist antwoord | Fout 1 | Fout 2 | Fout 3"></textarea>
-          <button class="btn" id="bulkadd" style="width:100%;margin:8px 0 18px">+ Plak-vragen toevoegen</button>
-          <div class="lbl">Nieuwe vraag</div>
-          <div class="grid" style="gap:8px">
-            <input id="nq" placeholder="Vraag">
-            <input id="na" placeholder="Juiste antwoord" style="border-color:#16a34a">
-            <input id="n1" placeholder="Fout antwoord 1"><input id="n2" placeholder="Fout antwoord 2 (optioneel)"><input id="n3" placeholder="Fout antwoord 3 (optioneel)">
-            <button class="btn" id="add">+ Vraag opslaan</button>
-            <input type="file" id="file" accept=".json" hidden>
-            <div class="row"><button class="btn" id="imp" style="flex:1">JSON importeren</button><button class="btn" id="exp" style="flex:1">JSON exporteren</button></div>
-            <button class="btn" id="save">💾 Bewaar als mijn set</button>
-            <div class="hint mono">Formaat: [{"q":"..","a":"..","options":["..",".."]}]</div>
-          </div>
+    go("setup", `<div class="wrap has-sbar">
+      <div class="row between" style="margin-bottom:22px"><div><button class="btn s ghost" id="back" style="margin-left:-10px">${ic("back")} Terug</button><h1 style="font-size:1.9rem;letter-spacing:-.02em;margin-top:6px">Spel maken</h1></div>
+        <button class="btn pri lg hide-m" id="launch" ${setup.qs.length ? "" : "disabled"}>${ic("play")} Spel starten</button></div>
+      <div class="setup">
+        <div class="grid">
+          <div class="card"><div class="row between"><label class="lbl" style="margin:0">Vragen <span class="pill">${setup.qs.length}</span></label></div>
+            <div class="mt" style="max-height:340px;overflow:auto">${setup.qs.map((q, i) => `<div class="qrow"><div style="min-width:0"><div class="xs mut mono">#${i + 1}</div><div style="font-weight:600">${esc(q.q)}</div><div class="xs mut">${esc(q.a)}</div></div><button class="x" data-d="${i}" aria-label="Verwijder">${ic("x")}</button></div>`).join("") || '<div class="mut sm">Nog geen vragen. Voeg ze hieronder toe of kies een set.</div>'}</div></div>
+          <div class="card"><label class="lbl">Vraag toevoegen</label><div class="grid" style="gap:10px">
+            <input id="nq" placeholder="Vraag"><input id="na" placeholder="Juiste antwoord"><div class="grid" style="grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px"><input id="n1" placeholder="Fout antwoord 1"><input id="n2" placeholder="Fout 2 (optioneel)"><input id="n3" placeholder="Fout 3 (optioneel)"></div>
+            <button class="btn" id="add">${ic("plus")} Vraag toevoegen</button></div></div>
+          <div class="card"><label class="lbl">Snel plakken</label><textarea id="bulk" rows="4" placeholder="Eén vraag per regel:&#10;Vraag | Juist antwoord | Fout 1 | Fout 2 | Fout 3"></textarea>
+            <div class="row mt"><button class="btn" id="bulkadd">${ic("plus")} Toevoegen</button><button class="btn" id="imp">${ic("up")} JSON importeren</button><button class="btn" id="exp">${ic("down")} JSON exporteren</button><input type="file" id="file" accept=".json" hidden></div></div>
         </div>
-        <div class="glass" style="padding:20px;max-height:80vh;overflow:auto">
-          <div class="lbl">Vragen (${setup.qs.length})</div>
-          ${setup.qs.map((q, i) => `<div class="qrow"><div><div class="hint mono">#${i + 1}</div>${esc(q.q)}</div><button class="x" data-d="${i}">✕</button></div>`).join("") || '<div class="hint">Nog geen vragen.</div>'}
-        </div></div></div>`);
-    $("#back").onclick = Home;
+        <div class="grid sticky">
+          <div class="card"><label class="lbl">Speeltijd</label><div class="seg" id="mins">${[3, 5, 8, 12].map(m => `<button data-m="${m}" class="${setup.minutes === m ? "on" : ""}">${m} min</button>`).join("")}</div>
+            <label class="lbl mt2">Hacks</label>
+            <label class="row" style="flex-wrap:nowrap"><input type="checkbox" id="hk" ${setup.hacks ? "checked" : ""}><span>Hacks aanzetten</span></label>
+            <div class="${setup.hacks ? "" : "mut"}" style="margin-top:12px"><label class="lbl">Hack na elke ... goede antwoorden</label><div class="seg" id="ev">${[2, 3, 5].map(n => `<button data-e="${n}" class="${setup.every === n ? "on" : ""}">${n}</button>`).join("")}</div></div></div>
+          <div class="card"><label class="lbl">Sets</label>
+            <div class="row">${Object.keys(PRESETS).map(k => `<button class="btn s" data-p="${esc(k)}">${esc(k)}</button>`).join("")}</div>
+            ${setup.sets.length ? `<label class="lbl mt">${user ? "Jouw sets (cloud)" : "Jouw sets (dit apparaat)"}</label><div class="grid" style="gap:6px">${setup.sets.map(s => `<div class="row" style="flex-wrap:nowrap"><button class="btn s" style="flex:1;justify-content:flex-start" data-s="${esc(s.id)}">${ic("save")} ${esc(s.name)}</button><button class="btn s dng" data-sd="${esc(s.id)}" aria-label="Verwijder set">${ic("x")}</button></div>`).join("")}</div>` : ""}
+            <button class="btn blk mt" id="save">${ic("save")} Huidige vragen bewaren</button>
+            ${user ? "" : `<p class="xs mut mt">Log in om je sets op al je apparaten te bewaren.</p>`}</div>
+        </div>
+      </div></div>
+      <div class="sbar"><button class="btn pri blk lg" id="launch2" ${setup.qs.length ? "" : "disabled"}>${ic("play")} Spel starten</button></div>`);
+    $("#back").onclick = () => Home("");
     document.querySelectorAll("[data-m]").forEach(b => b.onclick = () => { setup.minutes = +b.dataset.m; draw(); });
+    document.querySelectorAll("[data-e]").forEach(b => b.onclick = () => { setup.every = +b.dataset.e; draw(); });
     document.querySelectorAll("[data-p]").forEach(b => b.onclick = () => { setup.qs = structuredClone(PRESETS[b.dataset.p]); draw(); });
     document.querySelectorAll("[data-d]").forEach(b => b.onclick = () => { setup.qs.splice(+b.dataset.d, 1); draw(); });
-    $("#hk").onchange = e => setup.hacks = e.target.checked;
-    document.querySelectorAll("[data-e]").forEach(b => b.onclick = () => { setup.every = +b.dataset.e; draw(); });
-    document.querySelectorAll("[data-s]").forEach(b => b.onclick = () => { setup.qs = structuredClone(savedSets()[b.dataset.s]); draw(); });
-    document.querySelectorAll("[data-sd]").forEach(b => b.onclick = () => { const s = savedSets(); delete s[b.dataset.sd]; localStorage.sets = JSON.stringify(s); draw(); });
+    document.querySelectorAll("[data-s]").forEach(b => b.onclick = () => { const s = setup.sets.find(x => x.id === b.dataset.s); if (s) { setup.qs = structuredClone(s.qs); draw(); } });
+    document.querySelectorAll("[data-sd]").forEach(b => b.onclick = async () => {
+      if (!confirm("Deze set verwijderen?")) return;
+      if (user) await deleteDoc(doc(db, "users", user.uid, "sets", b.dataset.sd)); else { const s = localSets(); delete s[b.dataset.sd]; localStorage.sets = JSON.stringify(s); }
+      await refreshSets(); draw();
+    });
+    $("#hk").onchange = e => { setup.hacks = e.target.checked; draw(); };
+    $("#add").onclick = () => {
+      const q = $("#nq").value.trim(), a = $("#na").value.trim(), w = ["#n1", "#n2", "#n3"].map(s => $(s).value.trim()).filter(Boolean);
+      if (!q || !a || !w.length) return toast("Vul een vraag, het juiste antwoord en minstens 1 fout antwoord in.", "bad", 3500);
+      setup.qs.push({ q, a, options: w }); draw();
+    };
     $("#bulkadd").onclick = () => {
       const rows = $("#bulk").value.split("\n").map(l => l.split("|").map(x => x.trim()).filter(Boolean)).filter(r => r.length >= 3);
       if (!rows.length) return toast("Gebruik: Vraag | Juist | Fout 1 | Fout 2", "bad", 3500);
       setup.qs.push(...rows.map(r => ({ q: r[0], a: r[1], options: r.slice(2, 5) }))); draw(); toast(rows.length + " vragen toegevoegd");
     };
-    $("#exp").onclick = () => { const a = document.createElement("a"); a.href = URL.createObjectURL(new Blob([JSON.stringify(setup.qs, null, 2)], { type: "application/json" })); a.download = "naimit-vragen.json"; a.click(); };
-    $("#save").onclick = () => { const n = prompt("Naam voor deze set:"); if (!n) return; const s = savedSets(); s[n.slice(0, 24)] = setup.qs; localStorage.sets = JSON.stringify(s); draw(); toast("Set opgeslagen ✓"); };
-    $("#add").onclick = () => {
-      const q = $("#nq").value.trim(), a = $("#na").value.trim(), w = ["#n1", "#n2", "#n3"].map(s => $(s).value.trim()).filter(Boolean);
-      if (!q || !a || !w.length) return toast("Vul vraag, antwoord en minstens 1 fout antwoord in.", "bad");
-      setup.qs.push({ q, a, options: w }); draw();
-    };
     $("#imp").onclick = () => $("#file").click();
     $("#file").onchange = e => {
       const f = e.target.files[0]; if (!f) return; const r = new FileReader();
       r.onload = ev => { try { const j = JSON.parse(ev.target.result); const ok = (Array.isArray(j) ? j : []).filter(i => i.q && i.a && Array.isArray(i.options) && i.options.length);
-        if (!ok.length) throw new Error("Geen geldige vragen gevonden."); setup.qs.push(...ok); draw(); toast(ok.length + " vragen geimporteerd"); } catch (err) { toast(err.message, "bad"); } };
+        if (!ok.length) throw new Error("Geen geldige vragen gevonden."); setup.qs.push(...ok); draw(); toast(ok.length + " vragen geïmporteerd"); } catch (err) { toast(err.message, "bad"); } };
       r.readAsText(f);
     };
-    $("#launch").onclick = async () => {
-      $("#launch").disabled = true;
-      let pin; do { pin = String(Math.floor(100000 + Math.random() * 900000)); } while ((await getDoc(gref(pin))).exists());
-      await setDoc(gref(pin), { hostId: pid, status: "lobby", questions: setup.qs, minutes: setup.minutes, hacks: setup.hacks, every: setup.every, createdAt: Date.now(), endsAt: 0 });
-      localStorage.active = JSON.stringify({ role: "host", pin });
-      HostLobby(pin);
+    $("#exp").onclick = () => { const a = document.createElement("a"); a.href = URL.createObjectURL(new Blob([JSON.stringify(setup.qs, null, 2)], { type: "application/json" })); a.download = "naimit-vragen.json"; a.click(); };
+    $("#save").onclick = async () => {
+      if (!setup.qs.length) return; const n = (prompt("Naam voor deze set:") || "").trim().slice(0, 24); if (!n) return;
+      try { if (user) await setDoc(doc(db, "users", user.uid, "sets", n.toLowerCase().replace(/[^a-z0-9]+/g, "-") || "set"), { name: n, qs: setup.qs, updatedAt: Date.now() }); else { const s = localSets(); s[n] = setup.qs; localStorage.sets = JSON.stringify(s); }
+        await refreshSets(); draw(); toast("Set bewaard"); } catch { toast("Opslaan mislukt", "bad"); }
     };
+    const launch = async () => {
+      document.querySelectorAll("#launch,#launch2").forEach(b => b && (b.disabled = true));
+      try {
+        let pin; do { pin = String(Math.floor(100000 + Math.random() * 900000)); } while ((await getDoc(gref(pin))).exists());
+        await setDoc(gref(pin), { hostId: pid, status: "lobby", questions: setup.qs, minutes: setup.minutes, hacks: setup.hacks, every: setup.every, createdAt: Date.now(), endsAt: 0 });
+        localStorage.active = JSON.stringify({ role: "host", pin }); HostLobby(pin);
+      } catch { toast("Spel maken mislukt. Probeer het opnieuw.", "bad"); draw(); }
+    };
+    $("#launch").onclick = launch; $("#launch2").onclick = launch;
   };
   draw();
 }
 
 function HostLobby(pin) {
   cleanup(); S.role = "host"; S.pin = pin;
-  go("hlobby", `<div class="wrap" style="min-height:100vh;display:flex;flex-direction:column">
-    <div class="row" style="justify-content:space-between;align-items:flex-start">
-      <div><div class="lbl mono" style="color:var(--g)">GA NAAR NAIMIT-NCS.WEB.APP EN VOER DEZE PIN IN</div><div class="pin-big">${pin}</div>
-        <div class="row" style="margin-top:14px"><button class="btn go" id="cpin">📋 Kopieer PIN</button><button class="btn go" id="clink">🔗 Kopieer link</button></div></div>
-      <img alt="QR" class="glass" style="width:150px;height:150px;border-radius:14px;background:#fff;padding:6px" src="https://api.qrserver.com/v1/create-qr-code/?size=300x300&margin=0&data=${encodeURIComponent(location.origin + location.pathname + "?pin=" + pin)}">
-      <div class="glass" style="padding:18px 26px;text-align:right"><div class="stat" style="font-size:2.4rem" id="cnt">0</div><div class="lbl">Hackers online</div></div>
-    </div>
-    <div class="hint mono" style="margin:12px 0 22px">Spelers scannen de QR-code of openen: ${esc(location.origin + location.pathname)}?pin=${pin}</div>
-    <div class="grid pgrid" id="pl" style="flex:1;align-content:start"></div>
-    <button class="btn go big" id="start" style="margin-top:20px" disabled>Wachten op spelers...START HET SPEL</button></div>`);
+  const link = location.origin + location.pathname + "?pin=" + pin;
+  go("hlobby", `<div class="wrap has-sbar">
+    <div class="card hl"><div class="row between" style="align-items:flex-start;gap:20px">
+      <div><span class="lbl">Ga naar ${esc(location.host)} en voer de PIN in</span><div class="pin-big" aria-label="PIN">${pin}</div>
+        <div class="row mt"><button class="btn" id="cpin">${ic("copy")} Kopieer PIN</button><button class="btn" id="clink">${ic("link")} Kopieer link</button></div></div>
+      <img class="qr" alt="QR-code om mee te doen" src="https://api.qrserver.com/v1/create-qr-code/?size=300x300&margin=0&data=${encodeURIComponent(link)}"></div></div>
+    <div class="row between mt2"><h2 style="font-size:1.2rem">Spelers <span class="pill" id="cnt">0</span></h2><button class="btn pri lg hide-m" id="start" disabled>Wachten op spelers...</button></div>
+    <div class="grid pgrid mt" id="pl"></div></div>
+    <div class="sbar"><button class="btn pri blk lg" id="start2" disabled>Wachten op spelers...</button></div>`);
+  $("#cpin").onclick = () => copy(pin, "PIN gekopieerd");
+  $("#clink").onclick = () => copy(link, "Link gekopieerd");
   S.unsubs.push(onSnapshot(pcol(pin), s => {
     S.players = mapP(s);
-    $("#cnt").textContent = S.players.length; $("#start").disabled = !S.players.length; $("#start").textContent = S.players.length ? "START HET SPEL (" + S.players.length + " speler" + (S.players.length > 1 ? "s" : "") + ")" : "Wachten op spelers...";
-    setTimeout(() => document.querySelectorAll("[data-k]").forEach(b => b.onclick = () => updateDoc(pref(pin, b.dataset.k), { kicked: true })), 0);
-    $("#pl").innerHTML = (S.players.length ? "" : `<div class="hint" style="grid-column:1/-1">Nog niemand binnen. Deel de PIN, link of QR-code.</div>`) + S.players.map(p => `<div class="chip"><span class="av" style="margin:0">${p.avatar || "👤"}</span><span style="overflow:hidden;text-overflow:ellipsis">${esc(p.name)}</span><button class="kick" data-k="${p.id}" title="Verwijder speler">✕</button></div>`).join("");
+    $("#cnt").textContent = S.players.length;
+    const lbl = S.players.length ? `${ic("play")} Start (${S.players.length} speler${S.players.length > 1 ? "s" : ""})` : "Wachten op spelers...";
+    for (const id of ["#start", "#start2"]) { $(id).disabled = !S.players.length; $(id).innerHTML = lbl; }
+    $("#pl").innerHTML = S.players.length ? S.players.map(p => `<div class="chip">${avatar(p)}<span class="n">${esc(p.name)}</span><button class="x" data-k="${p.id}" aria-label="Verwijder ${esc(p.name)}">${ic("x")}</button></div>`).join("") : `<div class="mut sm" style="grid-column:1/-1">Nog niemand binnen. Deel de PIN, de link of de QR-code.</div>`;
+    document.querySelectorAll("[data-k]").forEach(b => b.onclick = () => updateDoc(pref(pin, b.dataset.k), { kicked: true }));
   }));
-  $("#cpin").onclick = () => copy(pin, "PIN gekopieerd");
-  $("#clink").onclick = () => copy(location.origin + location.pathname + "?pin=" + pin, "Link gekopieerd");
-  $("#start").onclick = async () => {
+  const start = async () => {
     const g = (await getDoc(gref(pin))).data();
-    await updateDoc(gref(pin), { status: "playing", endsAt: Date.now() + g.minutes * 60000 });
-    HostGame(pin);
+    await updateDoc(gref(pin), { status: "playing", endsAt: Date.now() + g.minutes * 60000 }); HostGame(pin);
   };
+  $("#start").onclick = start; $("#start2").onclick = start;
 }
 
 function Board(players, meId, max = 10) {
-  const sorted = [...players].sort((a, b) => b.score - a.score);
-  return sorted.slice(0, max).map((p, i) => `<div class="lbrow ${p.id === meId ? "me" : ""}"><b class="rk">${i + 1}</b>
-    <div style="min-width:0"><div style="font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap"><span class="av">${p.avatar || "👤"}</span>${esc(p.name)}${p.shield ? " 🛡️" : ""}${p.frozenUntil > Date.now() ? " 🧊" : ""}${p.multUntil > Date.now() ? " ⚡" : ""}</div></div>
-    <b class="mono" style="color:var(--y)">${fmt(p.score)}</b></div>`).join("");
+  const now = Date.now();
+  return [...players].sort((a, b) => b.score - a.score).slice(0, max).map((p, i) => `<div class="lbrow ${p.id === meId ? "me" : ""}"><span class="rk">${i + 1}</span>${avatar(p)}
+    <span class="nm">${esc(p.name)}${p.shield ? `<span style="color:var(--blue)">${ic("shield")}</span>` : ""}${p.frozenUntil > now ? `<span style="color:#5fd6e6">${ic("snow")}</span>` : ""}${p.multUntil > now ? `<span style="color:var(--warn)">${ic("zap")}</span>` : ""}</span>
+    <span class="sc">${fmt(p.score)}</span></div>`).join("");
 }
+const mapP = s => s.docs.map(d => ({ id: d.id, ...d.data() })).filter(p => !p.kicked);
 
 function HostGame(pin) {
   cleanup(); S.role = "host"; S.pin = pin;
   go("hgame", `<div class="wrap">
-    <div class="row" style="justify-content:space-between;margin-bottom:18px">
-      <div><div class="lbl mono" style="color:var(--g)">LIVE OPERATION · PIN ${pin}</div><div class="timer" id="tm">0:00</div></div>
-      <button class="btn red" id="end">STOP SPEL</button></div>
+    <div class="row between" style="margin-bottom:18px"><div><span class="lbl" style="margin:0">Live · PIN ${pin}</span><div class="timer" id="tm">0:00</div></div>
+      <button class="btn dng" id="end">Spel stoppen</button></div>
     <div class="grid" style="grid-template-columns:repeat(auto-fit,minmax(300px,1fr))">
-      <div class="glass" style="padding:18px"><div class="lbl">Leaderboard</div><div class="lb" id="lb"></div></div>
-      <div class="glass" style="padding:18px"><div class="lbl">Hack feed</div><div class="feed" id="feed"></div></div></div></div>`);
+      <div class="card"><label class="lbl">Ranglijst</label><div class="lb" id="lb"></div></div>
+      <div class="card"><label class="lbl">Hack-feed</label><div class="feed" id="feed"></div></div></div></div>`);
   const stop = async () => { await updateDoc(gref(pin), { status: "ended" }); Podium(pin); };
-  $("#end").onclick = stop;
+  $("#end").onclick = () => confirm("Het spel nu stoppen?") && stop();
   S.unsubs.push(onSnapshot(gref(pin), s => { S.game = s.data(); }));
   S.unsubs.push(onSnapshot(pcol(pin), s => { S.players = mapP(s); $("#lb") && ($("#lb").innerHTML = Board(S.players, null, 12)); }));
   S.unsubs.push(onSnapshot(query(ecol(pin), orderBy("t", "desc"), limit(10)), s => {
-    $("#feed") && ($("#feed").innerHTML = s.docs.map(d => d.data()).map(e => `<div class="${e.hack ? "h" : ""}">${esc(e.text)}</div>`).join("") || '<div>Wachten op actie...</div>');
+    $("#feed") && ($("#feed").innerHTML = s.docs.map(d => d.data()).map(e => `<div>${esc(e.text)}</div>`).join("") || '<div style="border-color:var(--line);color:var(--mut)">Nog geen hacks gebruikt.</div>');
   }));
   S.tick = setInterval(() => {
     if (!S.game) return; const left = S.game.endsAt - Date.now();
@@ -445,12 +647,18 @@ function HostGame(pin) {
 /* ---------- PLAYER ---------- */
 function Player(pin) {
   cleanup(); S.role = "player"; S.pin = pin; S.me = null; S.game = null;
-  go("plobby", `<div class="center"><div class="spin"></div><h2 style="margin:0">Je zit erin, <span style="color:var(--g)" id="mn"></span></h2>
-    <p class="mono hint">Wachten tot de host het spel start...</p><div class="chip" id="cnt">...</div>
-    <button class="btn small" id="leave" style="margin-top:22px">Verlaat spel</button></div>`);
+  go("plobby", `<div class="wrap narrow" style="text-align:center;padding-top:70px"><div class="spin"></div>
+    <h2 style="margin-top:22px;font-size:1.5rem;letter-spacing:-.02em">Je zit erin, <span id="mn"></span></h2>
+    <p class="mut mt">Wachten tot de host het spel start.</p><div class="pill mt" id="cnt">...</div>
+    <div class="mt2"><button class="btn s ghost" id="leave">Spel verlaten</button></div></div>`);
   $("#leave").onclick = () => { localStorage.removeItem("active"); Home(""); };
-  S.unsubs.push(onSnapshot(pref(pin, pid), s => { if (s.exists()) { const prev = S.me; S.me = { id: pid, ...s.data() }; if (S.me.kicked) { localStorage.removeItem("active"); toast("Je bent door de host verwijderd", "bad", 3500); return Home(""); } $("#mn") && ($("#mn").textContent = S.me.name); onMe(prev); } }));
-  S.unsubs.push(onSnapshot(pcol(pin), s => { S.players = mapP(s); $("#cnt") && ($("#cnt").textContent = S.players.length + " hackers online"); $("#lb") && ($("#lb").innerHTML = Board(S.players, pid, 5)); }));
+  S.unsubs.push(onSnapshot(pref(pin, pid), s => {
+    if (!s.exists()) return;
+    const prev = S.me; S.me = { id: pid, ...s.data() };
+    if (S.me.kicked) { localStorage.removeItem("active"); Home(""); return toast("Je bent door de host verwijderd", "bad", 3500); }
+    $("#mn") && ($("#mn").textContent = S.me.name); onMe(prev);
+  }));
+  S.unsubs.push(onSnapshot(pcol(pin), s => { S.players = mapP(s); $("#cnt") && ($("#cnt").textContent = S.players.length + " spelers online"); $("#lb") && ($("#lb").innerHTML = Board(S.players, pid, 5)); }));
   S.unsubs.push(onSnapshot(gref(pin), s => {
     S.game = s.data();
     if (S.game.status === "playing" && S.view === "plobby") PlayerGame();
@@ -459,48 +667,38 @@ function Player(pin) {
 }
 
 function onMe(prev) {
-  if (S.view !== "pgame" || !S.me) return;
-  const me = S.me;
+  if (S.view !== "pgame" || !S.me) return; const me = S.me;
   if (prev && me.lastHit && (!prev.lastHit || prev.lastHit.at !== me.lastHit.at)) {
-    if (me.lastHit.blocked) { toast("🛡️ Firewall blokkeerde een hack van " + me.lastHit.by, "good"); sfx.ok(); }
-    else { toast(`${HACKS[me.lastHit.kind].ic} ${me.lastHit.by} gebruikte ${HACKS[me.lastHit.kind].n} op jou!` + (me.lastHit.amt ? ` (-${fmt(me.lastHit.amt)})` : ""), "bad", 3500); sfx.hit(); }
+    if (me.lastHit.blocked) { toast("Je Firewall blokkeerde een hack van " + me.lastHit.by, "good"); sfx.ok(); }
+    else { toast(`${me.lastHit.by} gebruikte ${HACKS[me.lastHit.kind].n} op jou` + (me.lastHit.amt ? ` (-${fmt(me.lastHit.amt)})` : ""), "bad", 3500); sfx.hit(); }
   }
   paint();
 }
 
-let G = null; // player-game local state
+let G = null;
 function PlayerGame() {
-  const qs = S.game.questions;
-  G = { order: shuffle(qs.map((_, i) => i)), pos: 0, locked: false, picking: false, cur: null };
-  go("pgame", `<div>
-    <div class="topbar">
-      <div class="stat"><small>CREDITS</small><span id="sc" style="font-size:1.5rem;color:var(--y)">0</span></div>
-      <div class="stat" style="text-align:center"><small>STREAK</small><span id="stk">0</span></div>
-      <div class="stat" style="text-align:right"><small>TIJD</small><span id="tm" style="font-size:1.5rem;color:var(--g)">0:00</span></div>
-    </div>
-    <div class="wrap" style="max-width:820px">
-      <div class="fx" id="fx"></div>
-      <div class="bar"><div id="prog" style="width:0"></div></div>
-      <div class="glass qcard" id="qc"></div>
-      <div class="opts" id="opts"></div>
-      <div class="glass" style="padding:16px;margin-top:22px"><div class="lbl">Top 5</div><div class="lb" id="lb"></div></div>
-    </div></div><div id="layer"></div>`);
+  G = { order: shuffle(S.game.questions.map((_, i) => i)), pos: 0, locked: false, picking: false, cur: null };
+  go("pgame", `<div class="wrap narrow" style="padding-top:18px">
+    <div class="stats"><div class="stat"><small>Credits</small><b id="sc" style="color:var(--warn)">0</b></div><div class="stat"><small>Streak</small><b id="stk">0</b></div><div class="stat"><small>Tijd</small><b id="tm" style="color:var(--ac)">0:00</b></div></div>
+    <div class="bar" title="Voortgang naar je volgende hack"><div id="prog" style="width:0"></div></div>
+    <div class="fx" id="fx" style="margin:0 0 4px"></div>
+    <div class="card qcard" id="qc"></div><div class="opts" id="opts"></div>
+    <div class="card mt2"><label class="lbl">Top 5</label><div class="lb" id="lb"></div></div></div><div id="layer"></div>`);
   nextQ();
-  if (!localStorage.seenTip) { localStorage.seenTip = 1; setTimeout(() => toast("Tip: 3 goede antwoorden = een hack!", "good", 4500), 600); }
+  if (!localStorage.seenTip) { localStorage.seenTip = 1; setTimeout(() => toast("Tip: na een paar goede antwoorden mag je een hack kiezen", "good", 4500), 600); }
   S.tick = setInterval(() => {
-    const left = S.game.endsAt - Date.now(); $("#tm") && ($("#tm").textContent = fmtT(left));
-    paint();
+    const left = S.game.endsAt - Date.now(); $("#tm") && ($("#tm").textContent = fmtT(left)); paint();
     if (left <= -4000 && S.view !== "podium") Podium(S.pin);
   }, 250);
   paint();
 }
 
 function nextQ() {
+  if (S.view !== "pgame") return;
   const qs = S.game.questions;
   if (G.pos >= G.order.length) { G.order = shuffle(G.order); G.pos = 0; }
   const q = qs[G.order[G.pos++]];
-  const opts = shuffle([q.a, ...q.options]).slice(0, 4);
-  if (!opts.includes(q.a)) opts[0] = q.a;
+  let opts = shuffle([q.a, ...q.options]).slice(0, 4); if (!opts.includes(q.a)) opts[0] = q.a;
   G.cur = { q, opts: shuffle(opts) }; G.locked = false; G.shownAt = Date.now();
   $("#qc").textContent = q.q;
   $("#opts").innerHTML = G.cur.opts.map((o, i) => `<button class="opt o${i}" data-i="${i}"><i>${LET[i]}</i><span>${esc(o)}</span></button>`).join("");
@@ -509,57 +707,53 @@ function nextQ() {
 
 async function answer(i, btn) {
   const me = S.me; if (G.locked || G.picking || !me || me.frozenUntil > Date.now() || S.game.endsAt < Date.now()) return;
-  G.locked = true;
-  const ok = G.cur.opts[i] === G.cur.q.a;
+  G.locked = true; const ok = G.cur.opts[i] === G.cur.q.a; const every = S.game.every || 3;
   if (ok) {
     btn.classList.add("ok"); sfx.ok();
-    const mult = me.multUntil > Date.now() ? 2 : 1;
-    const fast = Date.now() - G.shownAt < 3000 ? 1.5 : 1;
-    const pts = Math.round((100 + Math.min(me.streak, 10) * 15) * mult * fast);
-    const correct = (me.correct || 0) + 1;
+    const mult = me.multUntil > Date.now() ? 2 : 1, fast = Date.now() - G.shownAt < 3000 ? 1.5 : 1;
+    const pts = Math.round((100 + Math.min(me.streak, 10) * 15) * mult * fast), correct = (me.correct || 0) + 1;
     await updateDoc(pref(S.pin, pid), { score: increment(pts), streak: increment(1), correct: increment(1), best: Math.max(me.best || 0, me.streak + 1) });
-    toast(`+${pts} credits${mult > 1 ? " ⚡" : ""}${fast > 1 ? " 🚀 snel!" : ""}`, "good", 900);
-    if (S.game.hacks && correct % (S.game.every || 3) === 0) { setTimeout(offerHacks, 500); return; }
+    toast(`+${pts} credits${fast > 1 ? " (snelheidsbonus)" : ""}`, "good", 900);
+    if (S.game.hacks && correct % every === 0) return setTimeout(offerHacks, 450);
     setTimeout(nextQ, 450);
   } else {
-    btn.classList.add("bad", "shake"); sfx.bad();
-    document.querySelectorAll(".opt").forEach(b => { if (G.cur.opts[+b.dataset.i] === G.cur.q.a) b.classList.add("ok"); });
+    btn.classList.add("bad"); sfx.bad();
+    document.querySelectorAll(".opt").forEach(b => { if (G.cur.opts[+b.dataset.i] === G.cur.q.a) b.classList.add("ok"); else if (b !== btn) b.classList.add("dim"); });
     await updateDoc(pref(S.pin, pid), { streak: 0, wrong: increment(1) });
     setTimeout(nextQ, 1500);
   }
 }
 
 function paint() {
-  const me = S.me; if (!me || S.view !== "pgame") return; const now = Date.now();
-  $("#sc").textContent = fmt(me.score); $("#stk").textContent = me.streak + "🔥";
-  $("#prog").style.width = ((me.correct || 0) % (S.game.every || 3)) / (S.game.every || 3) * 100 + "%";
-  $("#fx").innerHTML = (me.shield ? '<span class="tag t-sh">🛡️ FIREWALL</span>' : "") + (me.multUntil > now ? `<span class="tag t-ml">⚡ x2 ${Math.ceil((me.multUntil - now) / 1000)}s</span>` : "")
-    + `<span class="tag" style="color:#94a3b8;border-color:#334155">${S.game.hacks ? (S.game.every || 3) - ((me.correct || 0) % (S.game.every || 3)) + " goed = hack" : "geen hacks"}</span>`;
+  const me = S.me; if (!me || S.view !== "pgame" || !$("#sc")) return; const now = Date.now(), every = S.game.every || 3;
+  $("#sc").textContent = fmt(me.score); $("#stk").textContent = me.streak;
+  $("#prog").style.width = S.game.hacks ? ((me.correct || 0) % every) / every * 100 + "%" : "0";
+  $("#fx").innerHTML = (me.shield ? `<span class="tag sh">${ic("shield")} Firewall actief</span>` : "") + (me.multUntil > now ? `<span class="tag ml">${ic("zap")} x2 nog ${Math.ceil((me.multUntil - now) / 1000)}s</span>` : "")
+    + `<span class="tag">${S.game.hacks ? `Nog ${every - ((me.correct || 0) % every)} goed voor een hack` : "Hacks staan uit"}</span>`;
   $("#lb").innerHTML = Board(S.players, pid, 5);
-  const bo = S.game && S.game.blackout; const lay = $("#layer");
-  if (bo && bo.until > now && bo.by !== pid && !G.picking) { lay.innerHTML = `<div class="frozen" style="background:#000;backdrop-filter:none"><div style="font-size:4rem">🌑</div>BLACKOUT door ${esc(bo.name)}<div class="timer" style="color:#fff">${Math.ceil((bo.until - now) / 1000)}</div></div>`; return; }
-  if (me.frozenUntil > now && !G.picking) lay.innerHTML = `<div class="frozen"><div style="font-size:4rem">🧊</div>GEHACKT: FROZEN<div class="timer" style="color:#fff">${Math.ceil((me.frozenUntil - now) / 1000)}</div></div>`;
-  else if (lay.firstChild && lay.firstChild.classList && lay.firstChild.classList.contains("frozen")) lay.innerHTML = "";
+  const bo = S.game.blackout, lay = $("#layer");
+  if (bo && bo.until > now && bo.by !== pid && !G.picking) { lay.innerHTML = `<div class="block" style="background:#000"><div class="big">${ic("moon")}</div><h2>Blackout</h2><p class="mut">${esc(bo.name)} heeft het licht uitgedaan</p><div class="timer">${Math.ceil((bo.until - now) / 1000)}</div></div>`; return; }
+  if (me.frozenUntil > now && !G.picking) lay.innerHTML = `<div class="block"><div class="big" style="color:#5fd6e6">${ic("snow")}</div><h2>Je bent bevroren</h2><p class="mut">Je kunt zo weer antwoorden</p><div class="timer">${Math.ceil((me.frozenUntil - now) / 1000)}</div></div>`;
+  else if (lay.firstChild && lay.firstChild.classList.contains("block")) lay.innerHTML = "";
 }
 
 function offerHacks() {
   G.picking = true; sfx.hack();
   const hand = shuffle(HKEYS).slice(0, 3);
-  $("#layer").innerHTML = `<div class="modal"><div class="box glass neon"><div class="lbl mono" style="color:var(--g)">ACCESS GRANTED</div><h2 style="margin:0">Kies je hack</h2>
-    <div class="cards">${hand.map(k => `<button class="hcard" style="--c:${HACKS[k].c}" data-k="${k}"><div class="ic">${HACKS[k].ic}</div><b>${HACKS[k].n}</b><span>${HACKS[k].d}</span></button>`).join("")}</div></div></div>`;
+  $("#layer").innerHTML = `<div class="modal"><div class="box w"><span class="lbl" style="color:var(--ac)">Toegang verleend</span><h2 style="font-size:1.4rem">Kies je hack</h2>
+    <div class="cards">${hand.map(k => `<button class="hcard" style="--c:${HACKS[k].c}" data-k="${k}"><div class="hi">${ic(HACKS[k].ic)}</div><b>${HACKS[k].n}</b><span>${HACKS[k].d}</span></button>`).join("")}</div></div></div>`;
   document.querySelectorAll(".hcard").forEach(b => b.onclick = () => pickHack(b.dataset.k));
 }
-
 function pickHack(k) {
-  const H = HACKS[k];
-  if (!H.t) return runHack(k, null);
+  const H = HACKS[k]; if (!H.t) return runHack(k, null);
   const targets = S.players.filter(p => p.id !== pid).sort((a, b) => b.score - a.score).slice(0, 12);
-  if (!targets.length) { toast("Geen doelwitten online", "bad"); return endPick(); }
-  $("#layer").innerHTML = `<div class="modal"><div class="box glass neon"><div class="lbl mono" style="color:${H.c}">${H.ic} ${H.n} · KIES DOELWIT</div>
-    <div class="lb" style="margin-top:12px">${targets.map(p => `<button class="lbrow" data-t="${p.id}" style="text-align:left;color:#fff"><b class="rk">🎯</b><span style="font-weight:700">${esc(p.name)}${p.shield ? " 🛡️" : ""}</span><b class="mono" style="color:var(--y)">${fmt(p.score)}</b></button>`).join("")}</div></div></div>`;
+  if (!targets.length) { toast("Er zijn geen doelwitten online", "bad"); return endPick(); }
+  $("#layer").innerHTML = `<div class="modal"><div class="box w"><div class="row" style="color:${H.c}">${ic(H.ic)}<b>${H.n}</b></div><h2 style="font-size:1.3rem;margin-top:4px">Kies een doelwit</h2>
+    <div class="lb mt">${targets.map(p => `<button class="lbrow" data-t="${p.id}"><span class="rk"></span>${avatar(p)}<span class="nm">${esc(p.name)}${p.shield ? `<span style="color:var(--blue)">${ic("shield")}</span>` : ""}</span><span class="sc">${fmt(p.score)}</span></button>`).join("")}</div>
+    <button class="btn blk mt" id="skip">Annuleren</button></div></div>`;
   document.querySelectorAll("[data-t]").forEach(b => b.onclick = () => runHack(k, b.dataset.t));
+  $("#skip").onclick = offerHacks;
 }
-
 function endPick() { G.picking = false; $("#layer").innerHTML = ""; nextQ(); }
 
 async function runHack(k, tid) {
@@ -567,48 +761,54 @@ async function runHack(k, tid) {
   try {
     if (k === "overclock") { await updateDoc(pref(S.pin, pid), { multUntil: Date.now() + 20000 }); text = `${me.name} activeerde Overclock`; }
     else if (k === "firewall") { await updateDoc(pref(S.pin, pid), { shield: true }); text = `${me.name} zette een Firewall op`; }
-    else if (k === "blackout") { await updateDoc(gref(S.pin), { blackout: { by: pid, name: me.name, until: Date.now() + 5000 } }); text = `${me.name} activeerde BLACKOUT`; }
     else if (k === "jackpot") { await updateDoc(pref(S.pin, pid), { score: increment(250) }); text = `${me.name} won de Jackpot (+250)`; }
+    else if (k === "blackout") { await updateDoc(gref(S.pin), { blackout: { by: pid, name: me.name, until: Date.now() + 5000 } }); text = `${me.name} activeerde Blackout`; }
     else {
       const res = await runTransaction(db, async tx => {
         const tr = pref(S.pin, tid), mr = pref(S.pin, pid);
-        const [ts, ms] = await Promise.all([tx.get(tr), tx.get(mr)]);
-        const t = ts.data(), m = ms.data(), at = Date.now();
+        const [ts, ms] = await Promise.all([tx.get(tr), tx.get(mr)]); const t = ts.data(), m = ms.data(), at = Date.now();
         if (t.shield) { tx.update(tr, { shield: false, lastHit: { by: m.name, kind: k, blocked: true, at } }); return { blocked: true, name: t.name }; }
         if (k === "swap") { if (m.score >= t.score) return { nope: true, name: t.name }; tx.update(tr, { score: m.score, lastHit: { by: m.name, kind: k, amt: t.score - m.score, at } }); tx.update(mr, { score: t.score }); return { amt: t.score - m.score, name: t.name }; }
         if (k === "steal") { const amt = Math.floor(t.score * .15); tx.update(tr, { score: t.score - amt, lastHit: { by: m.name, kind: k, amt, at } }); tx.update(mr, { score: m.score + amt }); return { amt, name: t.name }; }
         if (k === "virus") { const amt = Math.min(150, t.score); tx.update(tr, { score: t.score - amt, lastHit: { by: m.name, kind: k, amt, at } }); return { amt, name: t.name }; }
         tx.update(tr, { frozenUntil: at + 6000, lastHit: { by: m.name, kind: k, at } }); return { name: t.name };
       });
-      if (res.nope) { text = `${me.name} probeerde te swappen met ${res.name}`; toast("Swap mislukt: jij hebt al meer credits", "bad"); }
-      else if (res.blocked) { text = `${me.name} faalde: ${res.name} had een Firewall`; toast("Geblokkeerd door een Firewall 🛡️", "bad"); }
-      else { text = `${me.name} → ${H.n} → ${res.name}` + (res.amt ? ` (${res.amt})` : ""); toast(`${H.ic} ${H.n} geslaagd${res.amt ? ": " + res.amt + " credits" : ""}`, "good"); }
+      if (res.nope) { text = `${me.name} probeerde te swappen met ${res.name}`; toast("Swap mislukt: je hebt al meer credits", "bad"); }
+      else if (res.blocked) { text = `${me.name} faalde: ${res.name} had een Firewall`; toast("Geblokkeerd door een Firewall", "bad"); }
+      else { text = `${me.name} gebruikte ${H.n} op ${res.name}` + (res.amt ? ` (${res.amt})` : ""); toast(`${H.n} geslaagd${res.amt ? ": " + fmt(res.amt) + " credits" : ""}`, "good"); }
     }
-    sfx.hack(); updateDoc(pref(S.pin, pid), { hacks: increment(1) });
-    addDoc(ecol(S.pin), { t: Date.now(), hack: true, text });
-  } catch (e) { toast("Hack mislukt: " + e.message, "bad"); }
+    sfx.hack(); updateDoc(pref(S.pin, pid), { hacks: increment(1) }); addDoc(ecol(S.pin), { t: Date.now(), text });
+  } catch (e) { toast("Hack mislukt. Probeer het opnieuw.", "bad"); }
   endPick();
 }
 
 /* ---------- PODIUM ---------- */
 function Podium(pin) {
-  cleanup(); S.role = S.role || "player"; localStorage.removeItem("active");
-  go("podium", `<div class="wrap" style="max-width:700px"><div class="center" style="min-height:0;padding-top:30px"><div class="lbl mono" style="color:var(--g)">OPERATION COMPLETE</div><h1 style="margin:0;font-size:2.6rem">Eindstand</h1></div>
-    <div class="podium" id="pod"></div><div class="grid" id="aw" style="grid-template-columns:repeat(auto-fit,minmax(200px,1fr));margin-bottom:16px"></div><div class="glass" style="padding:16px"><div class="lb" id="lb"></div></div>
-    <div class="row" style="justify-content:center;margin-top:24px"><button class="btn go big" id="home">Terug naar start</button></div></div>`);
-  $("#home").onclick = Home;
+  cleanup(); S.role = S.role || "player"; const wasHost = S.role === "host"; localStorage.removeItem("active");
+  go("podium", `<div class="wrap narrow"><div style="text-align:center;padding-top:10px"><span class="lbl" style="color:var(--ac)">Spel afgelopen</span><h1 style="font-size:2.2rem;letter-spacing:-.03em">Eindstand</h1></div>
+    <div class="podium" id="pod"></div><div class="grid" id="aw" style="grid-template-columns:repeat(auto-fit,minmax(220px,1fr));margin-bottom:14px"></div>
+    <div class="card"><div class="lb" id="lb"></div></div>
+    <button class="btn pri blk lg mt2" id="home">Terug naar start</button></div>`);
+  $("#home").onclick = () => { S.role = null; Home(""); };
   S.unsubs.push(onSnapshot(pcol(pin), s => {
     const ps = mapP(s).sort((a, b) => b.score - a.score);
-    const order = [[1, "p2"], [0, "p1"], [2, "p3"]].filter(([i]) => ps[i]);
-    $("#pod") && ($("#pod").innerHTML = order.map(([i, c]) => `<div class="pod ${c}"><div style="font-size:1.8rem">${["🥇", "🥈", "🥉"][i]}</div><div class="n">${esc(ps[i].name)}</div><div class="s">${fmt(ps[i].score)}</div></div>`).join(""));
-    const best = (fn, min) => ps.filter(p => fn(p) >= min).sort((a, b) => fn(b) - fn(a))[0];
+    const medal = ["p1", "p2", "p3"];
+    $("#pod") && ($("#pod").innerHTML = [[1, "p2"], [0, "p1"], [2, "p3"]].filter(([i]) => ps[i]).map(([i, c]) => `<div class="pod ${c}"><span class="pl">${i + 1}</span>${avatar(ps[i], true)}<div class="n">${esc(ps[i].name)}</div><div class="s">${fmt(ps[i].score)}</div></div>`).join(""));
     const acc = p => (p.correct || 0) + (p.wrong || 0) >= 3 ? (p.correct || 0) / ((p.correct || 0) + (p.wrong || 0)) : 0;
-    const aw = [["🎯 Scherpschutter", best(acc, .01), p => Math.round(acc(p) * 100) + "% goed"], ["🔥 Streak-koning", best(p => p.best || 0, 2), p => p.best + " op rij"], ["🧨 Hack-meester", best(p => p.hacks || 0, 1), p => p.hacks + " hacks"], ["📚 Meeste antwoorden", best(p => (p.correct || 0) + (p.wrong || 0), 1), p => ((p.correct || 0) + (p.wrong || 0)) + " vragen"]].filter(a => a[1]);
-    $("#aw") && ($("#aw").innerHTML = aw.map(([t, p, f]) => `<div class="award"><div class="lbl">${t}</div><b>${p.avatar || ""} ${esc(p.name)}</b> <span class="hint">${f(p)}</span></div>`).join(""));
+    const best = (fn, min) => ps.filter(p => fn(p) >= min).sort((a, b) => fn(b) - fn(a))[0];
+    const aw = [["Scherpschutter", best(acc, .01), p => Math.round(acc(p) * 100) + "% goed"], ["Streak-koning", best(p => p.best || 0, 2), p => p.best + " op rij"], ["Hack-meester", best(p => p.hacks || 0, 1), p => p.hacks + " hacks"], ["Meeste antwoorden", best(p => (p.correct || 0) + (p.wrong || 0), 1), p => ((p.correct || 0) + (p.wrong || 0)) + " vragen"]].filter(a => a[1]);
+    $("#aw") && ($("#aw").innerHTML = aw.map(([t, p, f]) => `<div class="award"><span class="lbl" style="margin-bottom:6px">${t}</span><div class="row" style="flex-wrap:nowrap">${avatar(p)}<b>${esc(p.name)}</b><span class="mut sm">${f(p)}</span></div></div>`).join(""));
     $("#lb") && ($("#lb").innerHTML = Board(ps, pid, 50));
+    // account stats, once per game
+    const myi = ps.findIndex(p => p.id === pid);
+    if (user && !wasHost && myi >= 0 && !localStorage["st_" + pin]) {
+      localStorage["st_" + pin] = 1; const p = ps[myi];
+      setDoc(doc(db, "users", user.uid), { name: dname(), games: increment(1), wins: increment(myi === 0 ? 1 : 0), correct: increment(p.correct || 0), wrong: increment(p.wrong || 0), credits: increment(p.score || 0), updatedAt: Date.now() }, { merge: true }).catch(() => {});
+    }
   }));
 }
 
+header();
 Home();
 </script>
 </body>
