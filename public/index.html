@@ -513,7 +513,7 @@ function NameStep(pin) {
 }
 
 /* ---------- HOST ---------- */
-let setup = { qs: structuredClone(PRESETS["Cyber en ICT"]), minutes: 5, hacks: true, every: 3, sets: [] };
+let setup = { qs: structuredClone(PRESETS["Cyber en ICT"]), minutes: 5, hacks: true, every: 3, penalty: 3, sets: [] };
 const localSets = () => { try { return JSON.parse(localStorage.sets || "{}"); } catch { return {}; } };
 async function refreshSets() {
   try {
@@ -540,6 +540,8 @@ async function HostSetup() {
         </div>
         <div class="grid sticky">
           <div class="card"><label class="lbl">Speeltijd</label><div class="seg" id="mins">${[3, 5, 8, 12].map(m => `<button data-m="${m}" class="${setup.minutes === m ? "on" : ""}">${m} min</button>`).join("")}</div>
+            <label class="lbl mt2">Wachttijd na een fout antwoord</label>
+            <div class="seg" id="pn">${[0, 3, 5, 10].map(n => `<button data-pn="${n}" class="${setup.penalty === n ? "on" : ""}">${n === 0 ? "Geen" : n + " sec"}</button>`).join("")}</div>
             <label class="lbl mt2">Hacks</label>
             <label class="row" style="flex-wrap:nowrap"><input type="checkbox" id="hk" ${setup.hacks ? "checked" : ""}><span>Hacks aanzetten</span></label>
             <div class="${setup.hacks ? "" : "mut"}" style="margin-top:12px"><label class="lbl">Hack na elke ... goede antwoorden</label><div class="seg" id="ev">${[2, 3, 5].map(n => `<button data-e="${n}" class="${setup.every === n ? "on" : ""}">${n}</button>`).join("")}</div></div></div>
@@ -553,6 +555,7 @@ async function HostSetup() {
       <div class="sbar"><button class="btn pri blk lg" id="launch2" ${setup.qs.length ? "" : "disabled"}>${ic("play")} Spel starten</button></div>`);
     $("#back").onclick = () => Home("");
     document.querySelectorAll("[data-m]").forEach(b => b.onclick = () => { setup.minutes = +b.dataset.m; draw(); });
+    document.querySelectorAll("[data-pn]").forEach(b => b.onclick = () => { setup.penalty = +b.dataset.pn; draw(); });
     document.querySelectorAll("[data-e]").forEach(b => b.onclick = () => { setup.every = +b.dataset.e; draw(); });
     document.querySelectorAll("[data-p]").forEach(b => b.onclick = () => { setup.qs = structuredClone(PRESETS[b.dataset.p]); draw(); });
     document.querySelectorAll("[data-d]").forEach(b => b.onclick = () => { setup.qs.splice(+b.dataset.d, 1); draw(); });
@@ -590,7 +593,7 @@ async function HostSetup() {
       document.querySelectorAll("#launch,#launch2").forEach(b => b && (b.disabled = true));
       try {
         let pin; do { pin = String(Math.floor(100000 + Math.random() * 900000)); } while ((await getDoc(gref(pin))).exists());
-        await setDoc(gref(pin), { hostId: pid, status: "lobby", questions: setup.qs, minutes: setup.minutes, hacks: setup.hacks, every: setup.every, createdAt: Date.now(), endsAt: 0 });
+        await setDoc(gref(pin), { hostId: pid, status: "lobby", questions: setup.qs, minutes: setup.minutes, hacks: setup.hacks, every: setup.every, penalty: setup.penalty, createdAt: Date.now(), endsAt: 0 });
         localStorage.active = JSON.stringify({ role: "host", pin }); HostLobby(pin);
       } catch { toast("Spel maken mislukt. Probeer het opnieuw.", "bad"); draw(); }
     };
@@ -617,8 +620,8 @@ function HostLobby(pin) {
     $("#cnt").textContent = S.players.length;
     const lbl = S.players.length ? `${ic("play")} Start (${S.players.length} speler${S.players.length > 1 ? "s" : ""})` : "Wachten op spelers...";
     for (const id of ["#start", "#start2"]) { $(id).disabled = !S.players.length; $(id).innerHTML = lbl; }
-    $("#pl").innerHTML = S.players.length ? S.players.map(p => `<div class="chip">${avatar(p)}<span class="n">${esc(p.name)}</span><button class="x" data-k="${p.id}" aria-label="Verwijder ${esc(p.name)}">${ic("x")}</button></div>`).join("") : `<div class="mut sm" style="grid-column:1/-1">Nog niemand binnen. Deel de PIN, de link of de QR-code.</div>`;
-    document.querySelectorAll("[data-k]").forEach(b => b.onclick = () => updateDoc(pref(pin, b.dataset.k), { kicked: true }));
+    $("#pl").innerHTML = S.players.length ? S.players.map(p => `<button class="chip" data-kick="${p.id}" title="Klik om ${esc(p.name)} te verwijderen" style="text-align:left;width:100%">${avatar(p)}<span class="n">${esc(p.name)}</span><span class="x">${ic("x")}</span></button>`).join("") : `<div class="mut sm" style="grid-column:1/-1">Nog niemand binnen. Deel de PIN, de link of de QR-code.</div>`;
+    bindKick(pin);
   }));
   const start = async () => {
     const g = (await getDoc(gref(pin))).data();
@@ -627,12 +630,19 @@ function HostLobby(pin) {
   $("#start").onclick = start; $("#start2").onclick = start;
 }
 
-function Board(players, meId, max = 10) {
+function Board(players, meId, max = 10, kick = false) {
   const now = Date.now();
-  return [...players].sort((a, b) => b.score - a.score).slice(0, max).map((p, i) => `<div class="lbrow ${p.id === meId ? "me" : ""}"><span class="rk">${i + 1}</span>${avatar(p)}
+  return [...players].sort((a, b) => b.score - a.score).slice(0, max).map((p, i) => `<${kick ? `button data-kick="${p.id}" title="Klik om ${esc(p.name)} te verwijderen"` : "div"} class="lbrow ${p.id === meId ? "me" : ""}"><span class="rk">${i + 1}</span>${avatar(p)}
     <span class="nm">${esc(p.name)}${p.shield ? `<span style="color:var(--blue)">${ic("shield")}</span>` : ""}${p.frozenUntil > now ? `<span style="color:#5fd6e6">${ic("snow")}</span>` : ""}${p.multUntil > now ? `<span style="color:var(--warn)">${ic("zap")}</span>` : ""}</span>
-    <span class="sc">${fmt(p.score)}</span></div>`).join("");
+    <span class="sc">${fmt(p.score)}</span></${kick ? "button" : "div"}>`).join("");
 }
+function confirmKick(pin, id, name) {
+  const m = modal(`<h2 style="font-size:1.25rem">${esc(name)} verwijderen?</h2><p class="mut sm" style="margin:8px 0 18px">De speler wordt uit het spel gezet en kan niet meer meedoen met dit spel.</p>
+    <div class="row" style="flex-wrap:nowrap"><button class="btn blk" id="no">Annuleren</button><button class="btn blk dng" id="yes">Verwijderen</button></div>`);
+  m.querySelector("#no").onclick = () => m.remove();
+  m.querySelector("#yes").onclick = async () => { await updateDoc(pref(pin, id), { kicked: true }); m.remove(); toast(name + " is verwijderd"); };
+}
+const bindKick = pin => document.querySelectorAll("[data-kick]").forEach(b => b.onclick = () => { const p = S.players.find(x => x.id === b.dataset.kick); if (p) confirmKick(pin, p.id, p.name); });
 const mapP = s => s.docs.map(d => ({ id: d.id, ...d.data() })).filter(p => !p.kicked);
 
 function HostGame(pin) {
@@ -641,12 +651,12 @@ function HostGame(pin) {
     <div class="row between" style="margin-bottom:18px"><div><span class="lbl" style="margin:0">Live · PIN ${pin}</span><div class="timer" id="tm">0:00</div></div>
       <button class="btn dng" id="end">Spel stoppen</button></div>
     <div class="grid" style="grid-template-columns:repeat(auto-fit,minmax(300px,1fr))">
-      <div class="card"><label class="lbl">Ranglijst</label><div class="lb" id="lb"></div></div>
+      <div class="card"><label class="lbl">Ranglijst <span class="mut" style="text-transform:none;letter-spacing:0;font-weight:400">(klik op een naam om te verwijderen)</span></label><div class="lb" id="lb"></div></div>
       <div class="card"><label class="lbl">Hack-feed</label><div class="feed" id="feed"></div></div></div></div>`);
   const stop = async () => { await updateDoc(gref(pin), { status: "ended" }); Podium(pin); };
   $("#end").onclick = () => confirm("Het spel nu stoppen?") && stop();
   S.unsubs.push(onSnapshot(gref(pin), s => { S.game = s.data(); }));
-  S.unsubs.push(onSnapshot(pcol(pin), s => { S.players = mapP(s); $("#lb") && ($("#lb").innerHTML = Board(S.players, null, 12)); }));
+  S.unsubs.push(onSnapshot(pcol(pin), s => { S.players = mapP(s); if ($("#lb")) { $("#lb").innerHTML = Board(S.players, null, 30, true); bindKick(pin); } }));
   S.unsubs.push(onSnapshot(query(ecol(pin), orderBy("t", "desc"), limit(10)), s => {
     $("#feed") && ($("#feed").innerHTML = s.docs.map(d => d.data()).map(e => `<div>${esc(e.text)}</div>`).join("") || '<div style="border-color:var(--line);color:var(--mut)">Nog geen hacks gebruikt.</div>');
   }));
@@ -696,6 +706,7 @@ function PlayerGame() {
     <div class="bar" title="Voortgang naar je volgende hack"><div id="prog" style="width:0"></div></div>
     <div class="fx" id="fx" style="margin:0 0 4px"></div>
     <div class="card qcard" id="qc"></div><div class="opts" id="opts"></div>
+    <div id="pen" class="tag" hidden style="margin-top:14px;color:var(--bad);border-color:rgba(255,93,108,.4);width:100%;justify-content:center;padding:12px"></div>
     <div class="card mt2"><label class="lbl">Top 5</label><div class="lb" id="lb"></div></div></div><div id="layer"></div>`);
   nextQ();
   if (!localStorage.seenTip) { localStorage.seenTip = 1; setTimeout(() => toast("Tip: na een paar goede antwoorden mag je een hack kiezen", "good", 4500), 600); }
@@ -732,8 +743,13 @@ async function answer(i, btn) {
   } else {
     btn.classList.add("bad"); sfx.bad();
     document.querySelectorAll(".opt").forEach(b => { if (G.cur.opts[+b.dataset.i] === G.cur.q.a) b.classList.add("ok"); else if (b !== btn) b.classList.add("dim"); });
-    await updateDoc(pref(S.pin, pid), { streak: 0, wrong: increment(1) });
-    setTimeout(nextQ, 1500);
+    updateDoc(pref(S.pin, pid), { streak: 0, wrong: increment(1) });
+    const pen = Math.max(1, S.game.penalty ?? 3), until = Date.now() + pen * 1000;
+    const pn = $("#pen"); if (pn) pn.hidden = false;
+    clearInterval(G.penT);
+    const upd = () => { const left = Math.ceil((until - Date.now()) / 1000); if ($("#pen")) $("#pen").textContent = `Fout antwoord. Wacht nog ${Math.max(left, 0)} sec...`; };
+    upd(); G.penT = setInterval(upd, 250);
+    setTimeout(() => { clearInterval(G.penT); if ($("#pen")) $("#pen").hidden = true; nextQ(); }, pen * 1000);
   }
 }
 
