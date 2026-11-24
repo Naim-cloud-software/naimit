@@ -378,7 +378,8 @@ function AuthModal(mode = "login") {
       m.remove(); header(); toast(mode === "login" ? "Ingelogd" : "Account aangemaakt");
     } catch (e) { fail(e); }
   };
-  m.querySelector("#go").onclick = submit; m.querySelector("#p").onkeydown = e => e.key === "Enter" && submit();
+  m.querySelector("#go").onclick = submit; m.querySelector("#p").addEventListener("keydown", e => { if (e.key === "Enter") submit(); });
+  m.querySelector("#u").addEventListener("keydown", e => { if (e.key === "Enter") m.querySelector("#p").focus(); });
   if (m.querySelector("#fg")) m.querySelector("#fg").onclick = async () => {
     const id = m.querySelector("#u").value.trim(); if (!id.includes("@")) return er("Vul je e-mailadres in om je wachtwoord te herstellen.");
     try { await sendPasswordResetEmail(auth, id); er(""); toast("Herstelmail verstuurd", "good", 3500); } catch (e) { fail(e); }
@@ -482,13 +483,15 @@ function NameStep(pin) {
     <div class="row between"><span class="pill mono">Spel ${esc(pin)}</span><button class="btn s ghost" id="back">${ic("back")} Andere PIN</button></div>
     <h2 style="font-size:1.6rem;margin:18px 0 4px;letter-spacing:-.02em">Kies je naam</h2>
     <p class="mut sm">Zo zien de andere spelers je. ${user ? "" : 'Wil je je statistieken bewaren? <a href="#" id="lg">Log in</a>.'}</p>
-    <label class="lbl mt2" for="name">Naam</label><input id="name" maxlength="14" autocomplete="nickname" placeholder="bv. Ghost" value="${esc(dname() || localStorage.pname || "")}">
+    <label class="lbl mt2" for="name">Naam</label><input id="name" maxlength="14" autocomplete="off" autocapitalize="words" spellcheck="false" placeholder="Typ hier je naam, bv. Ghost" value="${esc(dname())}">
+    ${localStorage.pname && localStorage.pname !== dname() ? `<button class="btn s mt" id="prev" type="button">Vorige naam gebruiken: ${esc(localStorage.pname)}</button>` : ""}
     <label class="lbl mt">Kleur</label><div class="sw" id="sw">${COLORS.map(c => `<button data-c="${c}" style="background:${c}" aria-label="kleur"></button>`).join("")}</div>
     <button class="btn pri blk lg mt2" id="join">Meedoen</button><div class="err" id="err"></div></div></div>`);
   const mark = () => document.querySelectorAll("#sw button").forEach(b => b.classList.toggle("on", b.dataset.c === color)); mark();
   document.querySelectorAll("#sw button").forEach(b => b.onclick = () => { color = b.dataset.c; localStorage.pcol = color; mark(); });
   if ($("#lg")) $("#lg").onclick = e => { e.preventDefault(); AuthModal("login"); };
-  const name = $("#name"); name.focus(); name.select();
+  const name = $("#name"); if (innerWidth > 860) name.focus();
+  if ($("#prev")) $("#prev").onclick = () => { name.value = localStorage.pname; name.focus(); };
   $("#back").onclick = () => { history.replaceState(null, "", location.pathname); Home(""); };
   const join = async () => {
     const n = name.value.trim(); const err = m => $("#err").textContent = m;
@@ -506,7 +509,7 @@ function NameStep(pin) {
       Player(pin);
     } catch (e) { $("#join").disabled = false; err("Meedoen is mislukt. Probeer het opnieuw."); }
   };
-  $("#join").onclick = join; name.onkeydown = e => e.key === "Enter" && join();
+  $("#join").onclick = join; name.addEventListener("keydown", e => { if (e.key === "Enter") join(); });
 }
 
 /* ---------- HOST ---------- */
