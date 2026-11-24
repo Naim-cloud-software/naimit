@@ -1,12 +1,16 @@
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
-    // Naimit speelt zonder login: alleen spel-data is open, verwijderen kan niet.
+    // Spel-data is open zodat je zonder account kunt meedoen. Verwijderen kan niet.
     match /games/{pin} {
       allow read, create, update: if true;
       match /{sub=**} { allow read, create, update: if true; }
     }
-    match /artifacts/{a}/{rest=**} { allow read, write: if request.auth != null; }
+    // Accountdata: alleen de eigenaar.
+    match /users/{uid} {
+      allow read, write: if request.auth != null && request.auth.uid == uid;
+      match /{sub=**} { allow read, write: if request.auth != null && request.auth.uid == uid; }
+    }
     match /{other=**} { allow read, write: if false; }
   }
 }
